@@ -24,7 +24,7 @@ export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCard
 
   return (
     <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] group">
-      {/* Imagen del producto */}
+      {}
       <div className="relative overflow-hidden aspect-square">
         <img
           src={product.imagen}
@@ -32,7 +32,7 @@ export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCard
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
         
-        {/* Badges */}
+        {}
         <div className="absolute top-2 right-2 flex flex-col gap-2">
           {product.featured && (
             <Badge className="bg-[var(--neon-purple)] text-white border-0">

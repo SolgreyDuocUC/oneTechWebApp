@@ -22,7 +22,7 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {}
       <section className="relative bg-gradient-to-br from-black via-[#1a1a1a] to-black py-20 px-4 border-b-2 border-[var(--neon-green)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
@@ -91,7 +91,7 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
         </div>
       </section>
 
-      {/* Featured Products Section */}
+      {}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -124,7 +124,7 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
         </div>
       </section>
 
-      {/* Info Section */}
+      {}
       <section className="py-16 px-4 bg-[#0a0a0a] border-t-2 border-[var(--neon-green)]">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
