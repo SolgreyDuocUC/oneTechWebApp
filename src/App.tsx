@@ -13,6 +13,7 @@ import { RegisterPage } from './pages/RegisterPage';
 import { BlogPage } from './pages/BlogPage';
 import { ContactPage } from './pages/ContactPage';
 import { AdminPage } from './pages/AdminPage';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 type PageType =
   | 'home'

@@ -6,6 +6,9 @@ import { productos } from '../data/mockData';
 import { useCart } from '../contexts/CartContext';
 import { toast } from 'sonner';
 
+import Carousel from '../components/Carousel'; 
+
+
 interface HomePageProps {
   onNavigate: (page: string, data?: any) => void;
 }
@@ -22,7 +25,7 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
 
   return (
     <div className="min-h-screen">
-      {}
+      {/* Banner Section */}
       <section className="relative bg-gradient-to-br from-black via-[#1a1a1a] to-black py-20 px-4 border-b-2 border-[var(--neon-green)]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
@@ -91,7 +94,10 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
         </div>
       </section>
 
-      {}
+      {/* Uso del componente Carousel */}
+      <Carousel /> 
+
+      {/* Destacados Section */}
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -124,7 +130,7 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
         </div>
       </section>
 
-      {}
+      {/* About Section */}
       <section className="py-16 px-4 bg-[#0a0a0a] border-t-2 border-[var(--neon-green)]">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8">
@@ -149,7 +155,10 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
             </p>
           </div>
         </div>
+        
       </section>
     </div>
+
+    
   );
 };
