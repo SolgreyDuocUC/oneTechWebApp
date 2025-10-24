@@ -1,105 +1,138 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { UserPlus, ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
+// Asegúrate de que este mockData tenga el tipo de dato correcto (RegionesData[])
 import { regiones } from '../data/mockData';
-import {
-  validateRUN,
-  validateEmail,
-  validateAge,
-  formatRUN,
-} from '../utils/validations';
-import { toast } from 'sonner@2.0.3';
+import { validateRUN, validateEmail, validateAge, formatRUN } from '../utils/validations';
+import { toast } from 'sonner';
 
-interface RegisterPageProps {
-  onNavigate: (page: string, data?: any) => void;
+// --- Tipos de Datos ---
+
+/** Define los roles de usuario disponibles. */
+type UserRole = 'admin' | 'cliente' | 'vendedor';
+
+/** Interfaz completa para los datos del formulario de registro. */
+interface UserData {
+  run: string;
+  nombre: string;
+  apellidos: string;
+  email: string;
+  password: string;
+  confirmPassword: string; // Mantenemos aquí solo para el formulario
+  fechaNacimiento: string;
+  direccion: string;
+  region: string;
+  comuna: string;
+  rol: UserRole;
 }
+
+/** Define la estructura de datos que se enviará al backend/contexto de autenticación. */
+type RegisterPayload = Omit<UserData, 'confirmPassword'>;
+
+/** Props del componente RegisterPage. */
+interface RegisterPageProps {
+  onNavigate: (page: 'login' | 'home', data?: any) => void;
+}
+
+// --- Componente Principal ---
 
 export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
   const { register } = useAuth();
-  const [formData, setFormData] = useState({
+
+  // Estado principal con valores iniciales limpios
+  const [formData, setFormData] = useState<UserData>({
     run: '',
     nombre: '',
     apellidos: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    confirmPassword: '', // Inicializado
     fechaNacimiento: '',
     direccion: '',
     region: '',
     comuna: '',
-    rol: 'cliente' as 'admin' | 'cliente' | 'vendedor',
+    rol: 'cliente',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [selectedRegion, setSelectedRegion] = useState('');
 
-  const comunasDisponibles =
-    regiones.find((r) => r.nombre === selectedRegion)?.comunas || [];
+  // 🔄 Manejador de cambios genérico
+  const handleChange = useCallback((
+    key: keyof UserData, 
+    value: string | UserRole
+  ) => {
+    setFormData(prev => ({ ...prev, [key]: value }));
+    // Opcional: limpiar el error del campo al cambiar su valor
+    if (errors[key]) {
+      setErrors(prev => {
+        const { [key]: _, ...rest } = prev;
+        return rest;
+      });
+    }
+  }, [errors]);
 
-  const validate = () => {
+  // 🗺️ Comunas dinámicas (Usamos useMemo para evitar recálculos innecesarios)
+  const comunasDisponibles = useMemo(() => {
+    return regiones.find((r) => r.nombre === formData.region)?.comunas || [];
+  }, [formData.region]);
+  
+  // 🧩 Función de validación (Usamos useCallback)
+  const validate = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
-    // Validar RUN
-    if (!formData.run) {
+    // Validación de RUN
+    const runLimpio = formData.run.replace(/[^0-9kK]/g, ''); // Limpiar RUN antes de validar
+    if (!runLimpio) {
       newErrors.run = 'El RUN es obligatorio';
-    } else if (!validateRUN(formData.run)) {
-      newErrors.run = 'RUN inválido (7-9 dígitos sin puntos ni guión)';
+    } else if (!validateRUN(runLimpio)) {
+      // Nota: Si validateRUN maneja el formato chileno (con guion y dígito verificador), 
+      // deberías ajustarla y modificar el mensaje según lo que esperas.
+      // Si solo quieres 7-9 dígitos, el mensaje actual está bien.
+      newErrors.run = 'RUN inválido (ej: 12345678-k)';
     }
 
-    // Validar nombre y apellidos
-    if (!formData.nombre.trim()) {
-      newErrors.nombre = 'El nombre es obligatorio';
-    }
-    if (!formData.apellidos.trim()) {
-      newErrors.apellidos = 'Los apellidos son obligatorios';
-    }
+    // Validación de texto
+    if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es obligatorio';
+    if (!formData.apellidos.trim()) newErrors.apellidos = 'Los apellidos son obligatorios';
+    if (!formData.direccion.trim()) newErrors.direccion = 'La dirección es obligatoria';
 
-    // Validar email
+    // Validación de Email
     if (!formData.email) {
       newErrors.email = 'El correo es obligatorio';
     } else if (!validateEmail(formData.email)) {
-      newErrors.email =
-        'Correo inválido. Dominios permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com';
+      newErrors.email = 'Correo inválido. Dominios permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com';
     }
 
-    // Validar password
+    // Validación de Contraseña
     if (!formData.password) {
       newErrors.password = 'La contraseña es obligatoria';
     } else if (formData.password.length < 6) {
       newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (!formData.confirmPassword || formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
-    // Validar fecha de nacimiento
+    // Validación de Fecha de Nacimiento
     if (!formData.fechaNacimiento) {
       newErrors.fechaNacimiento = 'La fecha de nacimiento es obligatoria';
     } else if (!validateAge(formData.fechaNacimiento)) {
       newErrors.fechaNacimiento = 'Debes ser mayor de 18 años para registrarte';
     }
 
-    // Validar dirección
-    if (!formData.direccion.trim()) {
-      newErrors.direccion = 'La dirección es obligatoria';
-    }
-
-    // Validar región y comuna
-    if (!formData.region) {
-      newErrors.region = 'Debes seleccionar una región';
-    }
-    if (!formData.comuna) {
-      newErrors.comuna = 'Debes seleccionar una comuna';
-    }
+    // Validación de Región/Comuna
+    if (!formData.region) newErrors.region = 'Debes seleccionar una región';
+    if (!formData.comuna) newErrors.comuna = 'Debes seleccionar una comuna';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData]); // Depende de formData
 
+  // 📩 Envío del formulario
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -108,24 +141,41 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
       return;
     }
 
-    const { confirmPassword, ...userData } = formData;
-    const success = register(userData);
+    // 1. Crear el payload sin `confirmPassword`
+    // 2. Formatear el RUN antes de enviar (ej: 12.345.678-k)
+    const { confirmPassword, run, ...dataToSend } = formData;
+    
+    // Aseguramos que el RUN se envíe formateado o limpio, según lo espere `register`
+    // Aquí usamos `formatRUN` para consistencia visual/de almacenamiento.
+    const runFormateado = formatRUN(run); 
+
+    const payload: RegisterPayload = {
+        ...dataToSend,
+        run: runFormateado,
+    };
+
+    const success = register(payload);
 
     if (success) {
-      toast.success('Registro exitoso. Bienvenido a One Tech!');
+      toast.success('Registro exitoso. ¡Bienvenido a One Tech!');
       onNavigate('home');
     } else {
       toast.error('El correo o RUN ya están registrados');
+      // Mejoramos la lógica de los errores para no asumir ambos fallaron
+      // Idealmente, `register` indicaría si falló por email o run
       setErrors({
-        email: 'Este correo ya está registrado',
-        run: 'Este RUN ya está registrado',
+         email: 'Este correo ya está registrado',
+         run: 'Este RUN ya está registrado',
       });
     }
   };
 
+  // --- Renderizado ---
+
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">
+        {/* Botón volver */}
         <Button
           onClick={() => onNavigate('login')}
           variant="ghost"
@@ -135,127 +185,98 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
           Volver a iniciar sesión
         </Button>
 
+        {/* Título */}
         <div className="text-center mb-8">
           <h1 className="text-4xl mb-2 text-[var(--neon-green)]">Crear Cuenta</h1>
           <p className="text-gray-400">Únete a la comunidad gamer de One Tech</p>
         </div>
 
+        {/* Formulario */}
         <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* RUN */}
+              {/* --- RUN --- */}
               <div>
                 <label className="text-gray-300 mb-2 block">
                   RUN <span className="text-red-500">*</span>
                 </label>
                 <Input
                   type="text"
-                  placeholder="12345678"
+                  placeholder="12.345.678-K" // Placeholder más representativo
                   value={formData.run}
-                  onChange={(e) => {
-                    setFormData({ ...formData, run: e.target.value });
-                    setErrors({ ...errors, run: undefined });
-                  }}
+                  // Usamos el handler genérico
+                  onChange={(e) => handleChange('run', e.target.value)} 
                   onBlur={(e) => {
-                    if (validateRUN(e.target.value)) {
-                      setFormData({ ...formData, run: formatRUN(e.target.value) });
+                    // Solo si es válido, formatear el RUN
+                    // Asumiendo que validateRUN puede manejar el formato sin puntos/guion
+                    const runLimpio = e.target.value.replace(/[^0-9kK]/g, '');
+                    if (validateRUN(runLimpio)) {
+                      setFormData(prev => ({ ...prev, run: formatRUN(runLimpio) }));
+                    } else {
+                      // Opcional: Volver a mostrar el error si hay uno después de salir del foco
+                      validate(); 
                     }
                   }}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
                 {errors.run && <p className="text-red-500 text-sm mt-1">{errors.run}</p>}
-                <p className="text-xs text-gray-500 mt-1">Sin puntos ni guión, 7-9 dígitos</p>
               </div>
 
-              {/* Nombre */}
+              {/* --- Nombre --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Nombre <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Nombre *</label>
                 <Input
                   type="text"
-                  placeholder="Juan"
                   value={formData.nombre}
-                  onChange={(e) => {
-                    setFormData({ ...formData, nombre: e.target.value });
-                    setErrors({ ...errors, nombre: undefined });
-                  }}
+                  onChange={(e) => handleChange('nombre', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
                 {errors.nombre && <p className="text-red-500 text-sm mt-1">{errors.nombre}</p>}
               </div>
 
-              {/* Apellidos */}
+              {/* --- Apellidos --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Apellidos <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Apellidos *</label>
                 <Input
                   type="text"
-                  placeholder="Pérez González"
                   value={formData.apellidos}
-                  onChange={(e) => {
-                    setFormData({ ...formData, apellidos: e.target.value });
-                    setErrors({ ...errors, apellidos: undefined });
-                  }}
+                  onChange={(e) => handleChange('apellidos', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
-                {errors.apellidos && (
-                  <p className="text-red-500 text-sm mt-1">{errors.apellidos}</p>
-                )}
+                {errors.apellidos && <p className="text-red-500 text-sm mt-1">{errors.apellidos}</p>}
               </div>
 
-              {/* Email */}
+              {/* --- Email --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Correo Electrónico <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Correo Electrónico *</label>
                 <Input
                   type="email"
-                  placeholder="tu@email.com"
                   value={formData.email}
-                  onChange={(e) => {
-                    setFormData({ ...formData, email: e.target.value });
-                    setErrors({ ...errors, email: undefined });
-                  }}
+                  onChange={(e) => handleChange('email', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
                 {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
               </div>
 
-              {/* Password */}
+              {/* --- Password --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Contraseña <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Contraseña *</label>
                 <Input
                   type="password"
-                  placeholder="••••••••"
                   value={formData.password}
-                  onChange={(e) => {
-                    setFormData({ ...formData, password: e.target.value });
-                    setErrors({ ...errors, password: undefined });
-                  }}
+                  onChange={(e) => handleChange('password', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
-                {errors.password && (
-                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-                )}
+                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
               </div>
 
-              {/* Confirm Password */}
+              {/* --- Confirmar Password --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Confirmar Contraseña <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Confirmar Contraseña *</label>
                 <Input
                   type="password"
-                  placeholder="••••••••"
                   value={formData.confirmPassword}
-                  onChange={(e) => {
-                    setFormData({ ...formData, confirmPassword: e.target.value });
-                    setErrors({ ...errors, confirmPassword: undefined });
-                  }}
+                  onChange={(e) => handleChange('confirmPassword', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
                 {errors.confirmPassword && (
@@ -263,57 +284,46 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                 )}
               </div>
 
-              {/* Fecha de nacimiento */}
+              {/* --- Fecha Nacimiento --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Fecha de Nacimiento <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Fecha de Nacimiento *</label>
                 <Input
                   type="date"
                   value={formData.fechaNacimiento}
-                  onChange={(e) => {
-                    setFormData({ ...formData, fechaNacimiento: e.target.value });
-                    setErrors({ ...errors, fechaNacimiento: undefined });
-                  }}
+                  onChange={(e) => handleChange('fechaNacimiento', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
+                  // Opcional: limitar el rango de fechas
+                  max={new Date().toISOString().split('T')[0]} 
                 />
                 {errors.fechaNacimiento && (
                   <p className="text-red-500 text-sm mt-1">{errors.fechaNacimiento}</p>
                 )}
-                <p className="text-xs text-gray-500 mt-1">Debes ser mayor de 18 años</p>
               </div>
 
-              {/* Dirección */}
+              {/* --- Dirección --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Dirección <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Dirección *</label>
                 <Input
                   type="text"
-                  placeholder="Av. Libertador 123"
                   value={formData.direccion}
-                  onChange={(e) => {
-                    setFormData({ ...formData, direccion: e.target.value });
-                    setErrors({ ...errors, direccion: undefined });
-                  }}
+                  onChange={(e) => handleChange('direccion', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
-                {errors.direccion && (
-                  <p className="text-red-500 text-sm mt-1">{errors.direccion}</p>
-                )}
+                {errors.direccion && <p className="text-red-500 text-sm mt-1">{errors.direccion}</p>}
               </div>
 
-              {/* Región */}
+              {/* --- Región --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Región <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Región *</label>
                 <Select
                   value={formData.region}
-                  onValueChange={(value) => {
-                    setSelectedRegion(value);
-                    setFormData({ ...formData, region: value, comuna: '' });
-                    setErrors({ ...errors, region: undefined });
+                  onValueChange={(value: any) => {
+                    // Al cambiar la región, forzamos la comuna a vacía
+                    setFormData(prev => ({ 
+                      ...prev, 
+                      region: value, 
+                      comuna: '' 
+                    }));
                   }}
                 >
                   <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
@@ -330,41 +340,41 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                 {errors.region && <p className="text-red-500 text-sm mt-1">{errors.region}</p>}
               </div>
 
-              {/* Comuna */}
+              {/* --- Comuna --- */}
               <div>
-                <label className="text-gray-300 mb-2 block">
-                  Comuna <span className="text-red-500">*</span>
-                </label>
+                <label className="text-gray-300 mb-2 block">Comuna *</label>
                 <Select
                   value={formData.comuna}
-                  onValueChange={(value) => {
-                    setFormData({ ...formData, comuna: value });
-                    setErrors({ ...errors, comuna: undefined });
-                  }}
-                  disabled={!formData.region}
+                  onValueChange={(value: string) => handleChange('comuna', value)}
+                  disabled={!formData.region || comunasDisponibles.length === 0}
                 >
                   <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
                     <SelectValue placeholder="Selecciona comuna" />
                   </SelectTrigger>
                   <SelectContent>
-                    {comunasDisponibles.map((comuna) => (
-                      <SelectItem key={comuna} value={comuna}>
-                        {comuna}
-                      </SelectItem>
-                    ))}
+                    {comunasDisponibles.length > 0 ? (
+                        comunasDisponibles.map((comuna) => (
+                        <SelectItem key={comuna} value={comuna}>
+                            {comuna}
+                        </SelectItem>
+                        ))
+                    ) : (
+                        // Muestra un item deshabilitado si no hay región seleccionada
+                        <SelectItem value="" disabled>
+                            Selecciona una región primero
+                        </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
                 {errors.comuna && <p className="text-red-500 text-sm mt-1">{errors.comuna}</p>}
               </div>
 
-              {/* Rol */}
+              {/* --- Rol --- */}
               <div>
                 <label className="text-gray-300 mb-2 block">Tipo de Usuario</label>
                 <Select
                   value={formData.rol}
-                  onValueChange={(value: 'admin' | 'cliente' | 'vendedor') =>
-                    setFormData({ ...formData, rol: value })
-                  }
+                  onValueChange={(value: UserRole) => handleChange('rol', value)}
                 >
                   <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
                     <SelectValue />
@@ -378,7 +388,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
               </div>
             </div>
 
-            {/* Botón submit */}
+            {/* --- Botón submit --- */}
             <Button
               type="submit"
               className="w-full bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"

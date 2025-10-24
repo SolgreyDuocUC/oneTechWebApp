@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Zap, Shield, Truck, ChevronLeft, ChevronRight } from 'lucide-react';
-import { ProductCard } from '../components/ProductCard';
+import { ProductCard } from '../components/Cart/ProductCard';
 import { Button } from '../components/ui/button';
 import { productos } from '../data/mockData';
 import { useCart } from '../contexts/CartContext';
