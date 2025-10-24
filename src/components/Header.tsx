@@ -19,6 +19,9 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
   const { getCartItemsCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Guardamos el conteo del carrito para no recalcularlo varias veces
+  const cartCount = getCartItemsCount();
+
   // Manejador para cerrar sesión
   const handleLogout = () => {
     logout();
@@ -80,9 +83,9 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               className="relative p-2 text-gray-300 hover:text-[var(--neon-green)] transition-colors"
             >
               <ShoppingCart className="w-6 h-6" />
-              {getCartItemsCount() > 0 && (
+              {cartCount > 0 && (
                 <span className="absolute -top-1 -right-1 bg-[var(--neon-purple)] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {getCartItemsCount()}
+                  {cartCount}
                 </span>
               )}
             </button>
@@ -107,6 +110,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               <Button
                 onClick={() => onNavigate('login')}
                 className="bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"
+                size="sm"
               >
                 <User className="w-4 h-4 mr-2" />
                 Ingresar
@@ -114,79 +118,97 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-gray-300 hover:text-[var(--neon-green)]"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
+          {/* Mobile Right Section (Ingresar + Hamburguesa) */}
+          <div className="flex items-center gap-2 md:hidden">
+            {isAuthenticated ? (
+              <button
+                onClick={() => onNavigate('profile')}
+                className="p-2 text-gray-300 hover:text-[var(--neon-green)] transition-colors"
+              >
+                <User className="w-6 h-6" />
+              </button>
+            ) : (
+              <Button
+                onClick={() => onNavigate('login')}
+                size="sm"
+                className="bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white px-3 py-1 text-sm"
+              >
+                Ingresar
+              </Button>
+            )}
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-800">
-            <div className="flex flex-col gap-4">
-              {navItems.map((item) => (
-                <button
-                  key={item.page}
-                  onClick={() => {
-                    onNavigate(item.page);
-                    setIsMenuOpen(false);
-                  }}
-                  className={`text-left py-2 ${
-                    currentPage === item.page
-                      ? 'text-[var(--neon-green)]'
-                      : 'text-gray-300'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-              <div className="border-t border-gray-800 pt-4 flex flex-col gap-3">
-                <button
-                  onClick={() => {
-                    onNavigate('cart');
-                    setIsMenuOpen(false);
-                  }}
-                  className="text-left py-2 text-gray-300 flex items-center gap-2"
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  Carrito ({getCartItemsCount()})
-                </button>
-                {isAuthenticated ? (
-                  <>
-                    <div className="text-gray-300 text-sm">
-                      {user?.nombre} ({user?.rol})
-                    </div>
-                    <Button
-                      onClick={() => {
-                        handleLogout();
-                        setIsMenuOpen(false);
-                      }}
-                      variant="outline"
-                      className="border-[var(--neon-green)] text-[var(--neon-green)]"
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Salir
-                    </Button>
-                  </>
-                ) : (
-                  <Button
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 text-gray-300 hover:text-[var(--neon-green)]"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          {isMenuOpen && (
+            <div className="md:hidden py-4 border-t border-gray-800">
+              <div className="flex flex-col gap-4">
+                {navItems.map((item) => (
+                  <button
+                    key={item.page}
                     onClick={() => {
-                      onNavigate('login');
+                      onNavigate(item.page);
                       setIsMenuOpen(false);
                     }}
-                    className="bg-[var(--neon-green)] text-black"
+                    className={`text-left py-2 ${
+                      currentPage === item.page ? 'text-[var(--neon-green)]' : 'text-gray-300'
+                    }`}
                   >
-                    <User className="w-4 h-4 mr-2" />
-                    Ingresar
-                  </Button>
-                )}
+                    {item.label}
+                  </button>
+                ))}
+                <div className="border-t border-gray-800 pt-4 flex flex-col gap-3">
+                  <button
+                    onClick={() => {
+                      onNavigate('cart');
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-left py-2 text-gray-300 flex items-center gap-2"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    Carrito ({cartCount})
+                  </button>
+                  {isAuthenticated ? (
+                    <>
+                      <div className="text-gray-300 text-sm">
+                        {user?.nombre} ({user?.rol})
+                      </div>
+                      <Button
+                        onClick={() => {
+                          handleLogout();
+                          setIsMenuOpen(false);
+                        }}
+                        variant="outline"
+                        className="border-[var(--neon-green)] text-[var(--neon-green)]"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Salir
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        onNavigate('login');
+                        setIsMenuOpen(false);
+                      }}
+                      className="bg-[var(--neon-green)] text-black"
+                      size="sm"
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      Ingresar
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </header>
   );
