@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { ShoppingCart, User, LogOut, Menu, X, Gamepad2 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { useCart } from '../contexts/CartContext';
-import { Button } from './ui/button';
+import { useAuth } from '../../contexts/AuthContext';
+import { useCart } from '../../contexts/CartContext';
+import { Button } from '../ui/button';
 
 // Propiedades del componente Header
 interface HeaderProps {
