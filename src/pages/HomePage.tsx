@@ -1,12 +1,12 @@
 import React from 'react';
 import { ArrowRight, Zap, Shield, Truck } from 'lucide-react';
-import { ProductCard } from '../components/common/ProductCard';
+import { ProductCard } from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { productos } from '../data/mockData';
 import { useCart } from '../contexts/CartContext';
 import { toast } from 'sonner';
 
-import Carousel from '../components/common/Carousel'; 
+import Carousel from '../components/Carousel'; 
 
 
 interface HomePageProps {
