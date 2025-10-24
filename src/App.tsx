@@ -13,8 +13,8 @@ import { RegisterPage } from './pages/RegisterPage';
 import { BlogPage } from './pages/BlogPage';
 import { ContactPage } from './pages/ContactPage';
 import { AdminPage } from './pages/AdminPage';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
+// Tipos de páginas disponibles en la aplicación
 type PageType =
   | 'home'
   | 'catalog'
@@ -26,27 +26,34 @@ type PageType =
   | 'contact'
   | 'admin';
 
+// Estado de navegación con página actual y datos opcionales
 interface NavigationState {
   page: PageType;
   data?: any;
 }
 
+/**
+ * Componente principal de la aplicación One Tech
+ * Gestiona la navegación entre páginas y provee contextos globales
+ */
 export default function App() {
   const [navigationState, setNavigationState] = useState<NavigationState>({
     page: 'home',
   });
 
+  // Manejador de navegación entre páginas
   const handleNavigate = (page: string, data?: any) => {
     setNavigationState({ page: page as PageType, data });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Renderizar la página correspondiente según el estado de navegación
   const renderPage = () => {
     switch (navigationState.page) {
       case 'home':
         return <HomePage onNavigate={handleNavigate} />;
       case 'catalog':
-        return <CatalogPage onNavigate={handleNavigate} />;
+        return <CatalogPage onNavigate={handleNavigate} initialData={navigationState.data} />;
       case 'product-detail':
         return (
           <ProductDetailPage

@@ -6,17 +6,23 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { reviews } from '../data/mockData';
 
+// Propiedades del componente ProductCard
 interface ProductCardProps {
   product: Product;
   onAddToCart: (productId: string) => void;
   onViewDetails: (productId: string) => void;
 }
 
+/**
+ * Componente ProductCard - Tarjeta de producto
+ * Muestra información del producto, precio, stock y permite agregar al carrito
+ */
 export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCardProps) => {
+  // Verificar si el stock es bajo o está agotado
   const isLowStock = product.stockCritico && product.stock <= product.stockCritico;
   const isOutOfStock = product.stock === 0;
   
-  // Calcular calificación promedio
+  // Calcular calificación promedio del producto
   const productReviews = reviews.filter(r => r.productId === product.id);
   const avgRating = productReviews.length > 0
     ? productReviews.reduce((sum, r) => sum + r.calificacion, 0) / productReviews.length
@@ -24,7 +30,7 @@ export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCard
 
   return (
     <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] group">
-      {}
+      {/* Imagen del producto */}
       <div className="relative overflow-hidden aspect-square">
         <img
           src={product.imagen}
@@ -32,7 +38,7 @@ export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCard
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
         
-        {}
+        {/* Badges */}
         <div className="absolute top-2 right-2 flex flex-col gap-2">
           {product.featured && (
             <Badge className="bg-[var(--neon-purple)] text-white border-0">

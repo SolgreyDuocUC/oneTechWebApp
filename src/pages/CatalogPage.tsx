@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 import { Input } from '../components/ui/input';
@@ -8,24 +8,39 @@ import { productos } from '../data/mockData';
 import { useCart } from '../contexts/CartContext';
 import { toast } from 'sonner';
 
+// Propiedades del componente CatalogPage
 interface CatalogPageProps {
   onNavigate: (page: string, data?: any) => void;
+  initialData?: { categoria?: string };
 }
 
-export const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
+/**
+ * Componente CatalogPage - Página del catálogo de productos
+ * Permite filtrar, buscar y ordenar productos
+ */
+export const CatalogPage = ({ onNavigate, initialData }: CatalogPageProps) => {
   const { addToCart } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
 
+  // Aplicar filtro de categoría inicial si viene desde navegación
+  useEffect(() => {
+    if (initialData?.categoria) {
+      setSelectedCategory(initialData.categoria);
+    }
+  }, [initialData]);
+
+  // Obtener categorías únicas de los productos
   const categories = ['all', ...Array.from(new Set(productos.map((p) => p.categoria)))];
 
+  // Manejador para agregar productos al carrito
   const handleAddToCart = (productId: string) => {
     addToCart(productId, 1);
     toast.success('Producto agregado al carrito');
   };
 
-  // Filtrar productos
+  // Filtrar productos según búsqueda y categoría
   let filteredProducts = productos.filter((product) => {
     const matchesSearch =
       product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -35,7 +50,7 @@ export const CatalogPage = ({ onNavigate }: CatalogPageProps) => {
     return matchesSearch && matchesCategory;
   });
 
-  // Ordenar productos
+  // Ordenar productos según criterio seleccionado
   filteredProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-asc':

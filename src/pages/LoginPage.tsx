@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useAuth } from '../contexts/AuthContext';
 import { validateEmail } from '../utils/validations';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 
 interface LoginPageProps {
   onNavigate: (page: string, data?: any) => void;

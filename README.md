@@ -1,19 +1,11 @@
-PROYECTO REACT + TYPESCRIPT
 
-INSTRUCCIONES PARA EJECUTAR EL PROYECTO
+  # One Tech
 
-1. Abre una terminal y entra en la carpeta donde guardaste el proyecto:
-   cd "ruta/donde/guardaste/el/proyecto"
-   (Ejemplo: cd "C:\Users\TuNombre\Documents\mi-proyecto")
+  This is a code bundle for One Tech. The original project is available at https://www.figma.com/design/MIbjvS6YLugBYGqN3QbkQJ/One-Tech.
 
-2. Instala las dependencias:
-    npm install
+  ## Running the code
 
-3. Instala Sonner (si no se instaló automáticamente):
-   npm install sonner
+  Run `npm i` to install the dependencies.
 
-4. Inicia el servidor de desarrollo:
-   npm run dev
-
-5. Abre en tu navegador:
-   Ejemplo: http://localhost:5173
+  Run `npm run dev` to start the development server.
+  

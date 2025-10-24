@@ -8,7 +8,7 @@ import { productos, reviews as allReviews } from '../data/mockData';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { formatPrice } from '../utils/validations';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 
 interface ProductDetailPageProps {
   productId: string;

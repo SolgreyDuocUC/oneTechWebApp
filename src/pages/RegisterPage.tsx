@@ -1,23 +1,17 @@
-import React, { useState } from "react";
-import { UserPlus, ArrowLeft } from "lucide-react";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../components/ui/select";
-import { useAuth } from "../contexts/AuthContext";
-import { regiones } from "../data/mockData";
+import React, { useState } from 'react';
+import { UserPlus, ArrowLeft } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { useAuth } from '../contexts/AuthContext';
+import { regiones } from '../data/mockData';
 import {
   validateRUN,
   validateEmail,
   validateAge,
   formatRUN,
-} from "../utils/validations";
-import { toast } from "sonner";
+} from '../utils/validations';
+import { toast } from 'sonner@2.0.3';
 
 interface RegisterPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -26,64 +20,81 @@ interface RegisterPageProps {
 export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
   const { register } = useAuth();
   const [formData, setFormData] = useState({
-    run: "",
-    nombre: "",
-    apellidos: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    fechaNacimiento: "",
-    direccion: "",
-    region: "",
-    comuna: "",
-    rol: "cliente" as "admin" | "cliente" | "vendedor",
+    run: '',
+    nombre: '',
+    apellidos: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fechaNacimiento: '',
+    direccion: '',
+    region: '',
+    comuna: '',
+    rol: 'cliente' as 'admin' | 'cliente' | 'vendedor',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [selectedRegion, setSelectedRegion] = useState("");
+  const [selectedRegion, setSelectedRegion] = useState('');
 
   const comunasDisponibles =
     regiones.find((r) => r.nombre === selectedRegion)?.comunas || [];
 
-  // 🔹 Función genérica para manejar cambios en los inputs
-  const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: "" }));
-  };
-
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.run) newErrors.run = "El RUN es obligatorio";
-    else if (!validateRUN(formData.run))
-      newErrors.run = "RUN inválido (7-9 dígitos sin puntos ni guión)";
+    // Validar RUN
+    if (!formData.run) {
+      newErrors.run = 'El RUN es obligatorio';
+    } else if (!validateRUN(formData.run)) {
+      newErrors.run = 'RUN inválido (7-9 dígitos sin puntos ni guión)';
+    }
 
-    if (!formData.nombre.trim()) newErrors.nombre = "El nombre es obligatorio";
-    if (!formData.apellidos.trim())
-      newErrors.apellidos = "Los apellidos son obligatorios";
+    // Validar nombre y apellidos
+    if (!formData.nombre.trim()) {
+      newErrors.nombre = 'El nombre es obligatorio';
+    }
+    if (!formData.apellidos.trim()) {
+      newErrors.apellidos = 'Los apellidos son obligatorios';
+    }
 
-    if (!formData.email) newErrors.email = "El correo es obligatorio";
-    else if (!validateEmail(formData.email))
+    // Validar email
+    if (!formData.email) {
+      newErrors.email = 'El correo es obligatorio';
+    } else if (!validateEmail(formData.email)) {
       newErrors.email =
-        "Correo inválido. Dominios permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com";
+        'Correo inválido. Dominios permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com';
+    }
 
-    if (!formData.password)
-      newErrors.password = "La contraseña es obligatoria";
-    else if (formData.password.length < 6)
-      newErrors.password = "Debe tener al menos 6 caracteres";
+    // Validar password
+    if (!formData.password) {
+      newErrors.password = 'La contraseña es obligatoria';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
+    }
 
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "Las contraseñas no coinciden";
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Las contraseñas no coinciden';
+    }
 
-    if (!formData.fechaNacimiento)
-      newErrors.fechaNacimiento = "La fecha de nacimiento es obligatoria";
-    else if (!validateAge(formData.fechaNacimiento))
-      newErrors.fechaNacimiento = "Debes ser mayor de 18 años";
+    // Validar fecha de nacimiento
+    if (!formData.fechaNacimiento) {
+      newErrors.fechaNacimiento = 'La fecha de nacimiento es obligatoria';
+    } else if (!validateAge(formData.fechaNacimiento)) {
+      newErrors.fechaNacimiento = 'Debes ser mayor de 18 años para registrarte';
+    }
 
-    if (!formData.direccion.trim())
-      newErrors.direccion = "La dirección es obligatoria";
-    if (!formData.region) newErrors.region = "Selecciona una región";
-    if (!formData.comuna) newErrors.comuna = "Selecciona una comuna";
+    // Validar dirección
+    if (!formData.direccion.trim()) {
+      newErrors.direccion = 'La dirección es obligatoria';
+    }
+
+    // Validar región y comuna
+    if (!formData.region) {
+      newErrors.region = 'Debes seleccionar una región';
+    }
+    if (!formData.comuna) {
+      newErrors.comuna = 'Debes seleccionar una comuna';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -91,8 +102,9 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) {
-      toast.error("Por favor corrige los errores del formulario");
+      toast.error('Por favor corrige los errores del formulario');
       return;
     }
 
@@ -100,59 +112,22 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     const success = register(userData);
 
     if (success) {
-      toast.success("Registro exitoso. ¡Bienvenido a One Tech!");
-      onNavigate("home");
+      toast.success('Registro exitoso. Bienvenido a One Tech!');
+      onNavigate('home');
     } else {
-      toast.error("El correo o RUN ya están registrados");
+      toast.error('El correo o RUN ya están registrados');
       setErrors({
-        email: "Este correo ya está registrado",
-        run: "Este RUN ya está registrado",
+        email: 'Este correo ya está registrado',
+        run: 'Este RUN ya está registrado',
       });
     }
   };
-
-  // 🔹 Componente reutilizable para campos de entrada
-  const Field = ({
-    label,
-    name,
-    type = "text",
-    placeholder = "",
-    helper,
-  }: {
-    label: string;
-    name: keyof typeof formData;
-    type?: string;
-    placeholder?: string;
-    helper?: string;
-  }) => (
-    <div>
-      <label className="text-gray-300 mb-2 block">
-        {label} <span className="text-red-500">*</span>
-      </label>
-      <Input
-        type={type}
-        placeholder={placeholder}
-        value={formData[name]}
-        onChange={(e) => handleChange(name, e.target.value)}
-        onBlur={
-          name === "run"
-            ? (e) =>
-                validateRUN(e.target.value) &&
-                handleChange("run", formatRUN(e.target.value))
-            : undefined
-        }
-        className="bg-[#1a1a1a] border-gray-700 text-white"
-      />
-      {errors[name] && <p className="text-red-500 text-sm mt-1">{errors[name]}</p>}
-      {helper && <p className="text-xs text-gray-500 mt-1">{helper}</p>}
-    </div>
-  );
 
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">
         <Button
-          onClick={() => onNavigate("login")}
+          onClick={() => onNavigate('login')}
           variant="ghost"
           className="mb-6 text-[var(--neon-green)] hover:text-[var(--neon-purple)]"
         >
@@ -168,19 +143,165 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
         <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Field
-                label="RUN"
-                name="run"
-                placeholder="12345678"
-                helper="Sin puntos ni guión, 7-9 dígitos"
-              />
-              <Field label="Nombre" name="nombre" placeholder="Juan" />
-              <Field label="Apellidos" name="apellidos" placeholder="Pérez González" />
-              <Field label="Correo Electrónico" name="email" type="email" placeholder="tu@email.com" />
-              <Field label="Contraseña" name="password" type="password" placeholder="••••••••" />
-              <Field label="Confirmar Contraseña" name="confirmPassword" type="password" placeholder="••••••••" />
-              <Field label="Fecha de Nacimiento" name="fechaNacimiento" type="date" helper="Debes ser mayor de 18 años" />
-              <Field label="Dirección" name="direccion" placeholder="Av. Libertador 123" />
+              {/* RUN */}
+              <div>
+                <label className="text-gray-300 mb-2 block">
+                  RUN <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  placeholder="12345678"
+                  value={formData.run}
+                  onChange={(e) => {
+                    setFormData({ ...formData, run: e.target.value });
+                    setErrors({ ...errors, run: undefined });
+                  }}
+                  onBlur={(e) => {
+                    if (validateRUN(e.target.value)) {
+                      setFormData({ ...formData, run: formatRUN(e.target.value) });
+                    }
+                  }}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                />
+                {errors.run && <p className="text-red-500 text-sm mt-1">{errors.run}</p>}
+                <p className="text-xs text-gray-500 mt-1">Sin puntos ni guión, 7-9 dígitos</p>
+              </div>
+
+              {/* Nombre */}
+              <div>
+                <label className="text-gray-300 mb-2 block">
+                  Nombre <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Juan"
+                  value={formData.nombre}
+                  onChange={(e) => {
+                    setFormData({ ...formData, nombre: e.target.value });
+                    setErrors({ ...errors, nombre: undefined });
+                  }}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                />
+                {errors.nombre && <p className="text-red-500 text-sm mt-1">{errors.nombre}</p>}
+              </div>
+
+              {/* Apellidos */}
+              <div>
+                <label className="text-gray-300 mb-2 block">
+                  Apellidos <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Pérez González"
+                  value={formData.apellidos}
+                  onChange={(e) => {
+                    setFormData({ ...formData, apellidos: e.target.value });
+                    setErrors({ ...errors, apellidos: undefined });
+                  }}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                />
+                {errors.apellidos && (
+                  <p className="text-red-500 text-sm mt-1">{errors.apellidos}</p>
+                )}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="text-gray-300 mb-2 block">
+                  Correo Electrónico <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={formData.email}
+                  onChange={(e) => {
+                    setFormData({ ...formData, email: e.target.value });
+                    setErrors({ ...errors, email: undefined });
+                  }}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                />
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="text-gray-300 mb-2 block">
+                  Contraseña <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) => {
+                    setFormData({ ...formData, password: e.target.value });
+                    setErrors({ ...errors, password: undefined });
+                  }}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className="text-gray-300 mb-2 block">
+                  Confirmar Contraseña <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChange={(e) => {
+                    setFormData({ ...formData, confirmPassword: e.target.value });
+                    setErrors({ ...errors, confirmPassword: undefined });
+                  }}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                />
+                {errors.confirmPassword && (
+                  <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+                )}
+              </div>
+
+              {/* Fecha de nacimiento */}
+              <div>
+                <label className="text-gray-300 mb-2 block">
+                  Fecha de Nacimiento <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="date"
+                  value={formData.fechaNacimiento}
+                  onChange={(e) => {
+                    setFormData({ ...formData, fechaNacimiento: e.target.value });
+                    setErrors({ ...errors, fechaNacimiento: undefined });
+                  }}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                />
+                {errors.fechaNacimiento && (
+                  <p className="text-red-500 text-sm mt-1">{errors.fechaNacimiento}</p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">Debes ser mayor de 18 años</p>
+              </div>
+
+              {/* Dirección */}
+              <div>
+                <label className="text-gray-300 mb-2 block">
+                  Dirección <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Av. Libertador 123"
+                  value={formData.direccion}
+                  onChange={(e) => {
+                    setFormData({ ...formData, direccion: e.target.value });
+                    setErrors({ ...errors, direccion: undefined });
+                  }}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                />
+                {errors.direccion && (
+                  <p className="text-red-500 text-sm mt-1">{errors.direccion}</p>
+                )}
+              </div>
 
               {/* Región */}
               <div>
@@ -189,11 +310,11 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                 </label>
                 <Select
                   value={formData.region}
-                  onValueChange={(value: string) => {
+                  onValueChange={(value) => {
                     setSelectedRegion(value);
-                    handleChange("region", value);
-                    handleChange("comuna", "");
-                    }}
+                    setFormData({ ...formData, region: value, comuna: '' });
+                    setErrors({ ...errors, region: undefined });
+                  }}
                 >
                   <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
                     <SelectValue placeholder="Selecciona región" />
@@ -216,7 +337,10 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                 </label>
                 <Select
                   value={formData.comuna}
-                  onValueChange={(value: string) => handleChange("comuna", value)}
+                  onValueChange={(value) => {
+                    setFormData({ ...formData, comuna: value });
+                    setErrors({ ...errors, comuna: undefined });
+                  }}
                   disabled={!formData.region}
                 >
                   <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
@@ -238,8 +362,8 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                 <label className="text-gray-300 mb-2 block">Tipo de Usuario</label>
                 <Select
                   value={formData.rol}
-                  onValueChange={(value: "admin" | "cliente" | "vendedor") =>
-                    handleChange("rol", value)
+                  onValueChange={(value: 'admin' | 'cliente' | 'vendedor') =>
+                    setFormData({ ...formData, rol: value })
                   }
                 >
                   <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
@@ -254,6 +378,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
               </div>
             </div>
 
+            {/* Botón submit */}
             <Button
               type="submit"
               className="w-full bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"
@@ -263,11 +388,12 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
             </Button>
           </form>
 
+          {/* Link a login */}
           <div className="mt-6 text-center">
             <p className="text-gray-400">
-              ¿Ya tienes cuenta?{" "}
+              ¿Ya tienes cuenta?{' '}
               <button
-                onClick={() => onNavigate("login")}
+                onClick={() => onNavigate('login')}
                 className="text-[var(--neon-green)] hover:text-[var(--neon-purple)] transition-colors"
               >
                 Inicia sesión aquí
