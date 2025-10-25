@@ -25,15 +25,15 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
   
-  // Configurar el plugin de autoplay
+  // Configura el plugin de autoplay
   const autoplayPlugin = React.useRef(
     Autoplay({ delay: 4000, stopOnInteraction: true })
   );
   
-  // Filtrar productos destacados
+  // Filtra productos destacados
   const featuredProducts = productos.filter((p) => p.featured);
   
-  // Filtrar productos por categorías para secciones específicas
+  // Filtra productos por categorías para secciones específicas
   const computadores = productos.filter((p) => p.categoria === 'Computadores');
   const perifericos = productos.filter((p) => p.categoria === 'Periféricos');
   const monitores = productos.filter((p) => p.categoria === 'Monitores');
