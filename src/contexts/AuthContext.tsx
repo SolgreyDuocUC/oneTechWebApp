@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const register = (userData: Omit<User, 'id' | 'puntosLevelUp'>): boolean => {
-    // En una aplicación real, esto haría una llamada al backend
+
     const emailExists = usuarios.some((u) => u.email === userData.email);
     const runExists = usuarios.some((u) => u.run === userData.run);
     
