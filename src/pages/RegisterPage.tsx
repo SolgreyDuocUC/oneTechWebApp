@@ -4,24 +4,20 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../contexts/AuthContext';
-// Asegúrate de que este mockData tenga el tipo de dato correcto (RegionesData[])
-import { regiones } from '../data/mockData';
+import { regiones } from '../data/mockRegiones';
 import { validateRUN, validateEmail, validateAge, formatRUN } from '../utils/validations';
 import { toast } from 'sonner';
 
-// --- Tipos de Datos ---
-
-/** Define los roles de usuario disponibles. */
 type UserRole = 'admin' | 'cliente' | 'vendedor';
 
-/** Interfaz completa para los datos del formulario de registro. */
+
 interface UserData {
   run: string;
   nombre: string;
   apellidos: string;
   email: string;
   password: string;
-  confirmPassword: string; // Mantenemos aquí solo para el formulario
+  confirmPassword: string; 
   fechaNacimiento: string;
   direccion: string;
   region: string;
@@ -29,10 +25,9 @@ interface UserData {
   rol: UserRole;
 }
 
-/** Define la estructura de datos que se enviará al backend/contexto de autenticación. */
 type RegisterPayload = Omit<UserData, 'confirmPassword'>;
 
-/** Props del componente RegisterPage. */
+
 interface RegisterPageProps {
   onNavigate: (page: 'login' | 'home', data?: any) => void;
 }
@@ -59,7 +54,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // 🔄 Manejador de cambios genérico
+  // Manejador de cambios genérico
   const handleChange = useCallback((
     key: keyof UserData, 
     value: string | UserRole
@@ -74,12 +69,12 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     }
   }, [errors]);
 
-  // 🗺️ Comunas dinámicas (Usamos useMemo para evitar recálculos innecesarios)
+  // Comunas dinámicas (Usamos useMemo para evitar recálculos innecesarios)
   const comunasDisponibles = useMemo(() => {
     return regiones.find((r) => r.nombre === formData.region)?.comunas || [];
   }, [formData.region]);
   
-  // 🧩 Función de validación (Usamos useCallback)
+  // Función de validación (Usamos useCallback)
   const validate = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
@@ -88,9 +83,6 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     if (!runLimpio) {
       newErrors.run = 'El RUN es obligatorio';
     } else if (!validateRUN(runLimpio)) {
-      // Nota: Si validateRUN maneja el formato chileno (con guion y dígito verificador), 
-      // deberías ajustarla y modificar el mensaje según lo que esperas.
-      // Si solo quieres 7-9 dígitos, el mensaje actual está bien.
       newErrors.run = 'RUN inválido (ej: 12345678-k)';
     }
 
@@ -132,7 +124,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     return Object.keys(newErrors).length === 0;
   }, [formData]); // Depende de formData
 
-  // 📩 Envío del formulario
+  // Envío del formulario
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -161,8 +153,6 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
       onNavigate('home');
     } else {
       toast.error('El correo o RUN ya están registrados');
-      // Mejoramos la lógica de los errores para no asumir ambos fallaron
-      // Idealmente, `register` indicaría si falló por email o run
       setErrors({
          email: 'Este correo ya está registrado',
          run: 'Este RUN ya está registrado',
@@ -202,18 +192,14 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                 </label>
                 <Input
                   type="text"
-                  placeholder="12.345.678-K" // Placeholder más representativo
+                  placeholder="12.345.678-K"
                   value={formData.run}
-                  // Usamos el handler genérico
                   onChange={(e) => handleChange('run', e.target.value)} 
                   onBlur={(e) => {
-                    // Solo si es válido, formatear el RUN
-                    // Asumiendo que validateRUN puede manejar el formato sin puntos/guion
                     const runLimpio = e.target.value.replace(/[^0-9kK]/g, '');
                     if (validateRUN(runLimpio)) {
                       setFormData(prev => ({ ...prev, run: formatRUN(runLimpio) }));
                     } else {
-                      // Opcional: Volver a mostrar el error si hay uno después de salir del foco
                       validate(); 
                     }
                   }}
@@ -292,7 +278,6 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                   value={formData.fechaNacimiento}
                   onChange={(e) => handleChange('fechaNacimiento', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
-                  // Opcional: limitar el rango de fechas
                   max={new Date().toISOString().split('T')[0]} 
                 />
                 {errors.fechaNacimiento && (
@@ -318,7 +303,6 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                 <Select
                   value={formData.region}
                   onValueChange={(value: any) => {
-                    // Al cambiar la región, forzamos la comuna a vacía
                     setFormData(prev => ({ 
                       ...prev, 
                       region: value, 

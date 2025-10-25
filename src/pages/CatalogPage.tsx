@@ -4,43 +4,37 @@ import { ProductCard } from '../components/Cart/ProductCard';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { productos } from '../data/mockData';
+import { productos } from '../data/mockProductos';
 import { useCart } from '../contexts/CartContext';
 import { toast } from 'sonner';
 
-// Propiedades del componente CatalogPage
+
 interface CatalogPageProps {
   onNavigate: (page: string, data?: any) => void;
   initialData?: { categoria?: string };
 }
 
-/**
- * Componente CatalogPage - Página del catálogo de productos
- * Permite filtrar, buscar y ordenar productos
- */
+
 export const CatalogPage = ({ onNavigate, initialData }: CatalogPageProps) => {
   const { addToCart } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
 
-  // Aplicar filtro de categoría inicial si viene desde navegación
   useEffect(() => {
     if (initialData?.categoria) {
       setSelectedCategory(initialData.categoria);
     }
   }, [initialData]);
 
-  // Obtener categorías únicas de los productos
   const categories = ['all', ...Array.from(new Set(productos.map((p) => p.categoria)))];
 
-  // Manejador para agregar productos al carrito
   const handleAddToCart = (productId: string) => {
     addToCart(productId, 1);
     toast.success('Producto agregado al carrito');
   };
 
-  // Filtrar productos según búsqueda y categoría
+
   let filteredProducts = productos.filter((product) => {
     const matchesSearch =
       product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -50,7 +44,7 @@ export const CatalogPage = ({ onNavigate, initialData }: CatalogPageProps) => {
     return matchesSearch && matchesCategory;
   });
 
-  // Ordenar productos según criterio seleccionado
+
   filteredProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-asc':

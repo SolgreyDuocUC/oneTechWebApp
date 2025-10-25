@@ -1,10 +1,7 @@
 import React from 'react';
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
-/**
- * Componente Footer - Pie de página de la aplicación
- * Muestra información de contacto, enlaces rápidos y redes sociales
- */
+
 export const Footer = () => {
   return (
     <footer className="bg-black border-t-2 border-[var(--neon-green)] mt-auto">
