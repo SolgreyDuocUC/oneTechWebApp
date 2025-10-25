@@ -10,10 +10,7 @@ import {
   type CarouselApi,
 } from '../../../ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
-
-interface HomeCarouselProps {
-  onNavigate: (page: string, data?: any) => void;
-}
+import { HomeCarouselProps } from '../Interface/HomeCarouselProps';
 
 const HomeCarousel: React.FC<HomeCarouselProps> = ({ onNavigate }) => {
   const [carouselApi, setCarouselApi] = React.useState<CarouselApi>();

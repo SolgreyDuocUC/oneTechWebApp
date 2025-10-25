@@ -2,15 +2,9 @@ import React from 'react';
 import { ProductCard } from '../../3-Cart/Cart/ProductCard';
 import { Button } from '../../../ui/button';
 import { ArrowRight } from 'lucide-react';
-import { HomePageProps } from '../Interface/HomePageProps';
 import { toast } from 'sonner';
-import { Product } from '../../../../types';
+import { Props } from '../Interface/Props';
 
-interface Props {
-  productos: Product[];
-  onNavigate: HomePageProps['onNavigate'];
-  addToCart: (productId: string, quantity: number) => void;
-}
 
 const ProductosDestacados: React.FC<Props> = ({ productos, onNavigate, addToCart }) => {
   const handleAddToCart = (id: string) => {
