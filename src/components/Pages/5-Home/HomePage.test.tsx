@@ -12,8 +12,6 @@ describe('HomePage', () => {
         addToCart: mockAddToCart,
             }),
         }));
-
     })
-
 })
 
