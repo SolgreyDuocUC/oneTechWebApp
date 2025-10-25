@@ -1,8 +1,8 @@
 import React from 'react';
 import { Calendar, User, ArrowRight } from 'lucide-react';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { blogPosts } from '../data/mockblogPost';
+import { Badge } from '../../ui/badge';
+import { Button } from '../../ui/button';
+import { blogPosts } from '../../../data/mockblogPost';
 
 interface BlogPageProps {
   onNavigate: (page: string, data?: any) => void;

@@ -1,9 +1,9 @@
 import React from 'react';
 import { ArrowRight, Zap, Shield, Truck, ChevronLeft, ChevronRight } from 'lucide-react';
-import { ProductCard } from '../components/Cart/ProductCard';
-import { Button } from '../components/ui/button';
-import { productos } from '../data/mockProductos';
-import { useCart } from '../contexts/CartContext';
+import { ProductCard } from '../3-Cart/Cart/ProductCard';
+import { Button } from '../../ui/button';
+import { productos } from '../../../data/mockProductos';
+import { useCart } from '../../../contexts/CartContext';
 import { toast } from 'sonner';
 import {
   Carousel,
@@ -12,7 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
-} from '../components/ui/carousel';
+} from '../../ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 
 interface HomePageProps {

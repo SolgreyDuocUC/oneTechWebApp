@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import { Toaster } from './components/ui/sonner';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
-import { Header } from './components/NavBar/Header';
+import { Header } from './components/Layout/Header';
 import { Footer } from './components/Layout/Footer';
-import { HomePage } from './pages/HomePage';
-import { CatalogPage } from './pages/CatalogPage';
-import { ProductDetailPage } from './pages/ProductDetailPage';
-import { CartPage } from './pages/CartPage';
-import { LoginPage } from './pages/LoginPage';
-import { RegisterPage } from './pages/RegisterPage';
-import { BlogPage } from './pages/BlogPage';
-import { ContactPage } from './pages/ContactPage';
-import { AdminPage } from './pages/AdminPage';
+import { HomePage } from './components/Pages/5-Home/HomePage';
+import { CatalogPage } from './components/Pages/4-Catalog/CatalogPage';
+import { ProductDetailPage } from './components/Pages/7-ProductDetail/ProductDetailPage';
+import { CartPage } from './components/Pages/3-Cart/CartPage';
+import { LoginPage } from './components/Pages/6-Login/LoginPage';
+import { RegisterPage } from './components/Pages/8-Register/RegisterPage';
+import { BlogPage } from './components/Pages/2-Blog/BlogPage';
+import { ContactPage } from './components/Pages/9-Contact/ContactPage';
+import { AdminPage } from './components/Pages/1-Admin/AdminPage';
 
-// Tipos de páginas disponibles en la aplicación
 type PageType =
   | 'home'
   | 'catalog'
@@ -26,28 +25,21 @@ type PageType =
   | 'contact'
   | 'admin';
 
-// Estado de navegación con página actual y datos opcionales
 interface NavigationState {
   page: PageType;
   data?: any;
 }
 
-/**
- * Componente principal de la aplicación One Tech
- * Gestiona la navegación entre páginas y provee contextos globales
- */
 export default function App() {
   const [navigationState, setNavigationState] = useState<NavigationState>({
     page: 'home',
   });
 
-  // Manejador de navegación entre páginas
   const handleNavigate = (page: string, data?: any) => {
     setNavigationState({ page: page as PageType, data });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Renderizar la página correspondiente según el estado de navegación
   const renderPage = () => {
     switch (navigationState.page) {
       case 'home':

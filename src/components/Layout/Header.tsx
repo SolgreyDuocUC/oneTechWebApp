@@ -4,31 +4,24 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import { Button } from '../ui/button';
 
-// Propiedades del componente Header
 interface HeaderProps {
   onNavigate: (page: string) => void;
   currentPage: string;
 }
 
-/**
- * Componente Header - Barra de navegación principal
- * Muestra el logo, menú de navegación, carrito y estado de autenticación
- */
+
 export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
   const { user, logout, isAuthenticated } = useAuth();
   const { getCartItemsCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Guardamos el conteo del carrito para no recalcularlo varias veces
   const cartCount = getCartItemsCount();
 
-  // Manejador para cerrar sesión
   const handleLogout = () => {
     logout();
     onNavigate('home');
   };
 
-  // Items del menú de navegación
   const navItems = [
     { label: 'Inicio', page: 'home' },
     { label: 'Tienda', page: 'catalog' },
@@ -36,7 +29,6 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
     { label: 'Contacto', page: 'contact' },
   ];
 
-  // Agregar página de Admin si el usuario es administrador
   if (user?.rol === 'admin') {
     navItems.push({ label: 'Admin', page: 'admin' });
   }

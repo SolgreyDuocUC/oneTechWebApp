@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { useCart } from '../contexts/CartContext';
-import { useAuth } from '../contexts/AuthContext';
-import { formatPrice } from '../utils/validations';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { useCart } from '../../../contexts/CartContext';
+import { useAuth } from '../../../contexts/AuthContext';
+import { formatPrice } from '../../../utils/validations';
 import { toast } from 'sonner';
 
 interface CartPageProps {

@@ -1,11 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { UserPlus, ArrowLeft } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { useAuth } from '../contexts/AuthContext';
-import { regiones } from '../data/mockRegiones';
-import { validateRUN, validateEmail, validateAge, formatRUN } from '../utils/validations';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
+import { useAuth } from '../../../contexts/AuthContext';
+import { regiones } from '../../../data/mockRegiones';
+import { validateRUN, validateEmail, validateAge, formatRUN } from '../../../utils/validations';
 import { toast } from 'sonner';
 
 type UserRole = 'admin' | 'cliente' | 'vendedor';

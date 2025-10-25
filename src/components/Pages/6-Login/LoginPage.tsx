@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Mail, Lock, LogIn, UserPlus } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { useAuth } from '../contexts/AuthContext';
-import { validateEmail } from '../utils/validations';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { useAuth } from '../../../contexts/AuthContext';
+import { validateEmail } from '../../../utils/validations';
 import { toast } from 'sonner';
 
 interface LoginPageProps {

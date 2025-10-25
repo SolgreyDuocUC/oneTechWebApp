@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
-import { ProductCard } from '../components/Cart/ProductCard';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { productos } from '../data/mockProductos';
-import { useCart } from '../contexts/CartContext';
+import { ProductCard } from '../../Pages/3-Cart/Cart/ProductCard';
+import { Input } from '../../ui/input';
+import { Button } from '../../ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
+import { productos } from '../../../data/mockProductos';
+import { useCart } from '../../../contexts/CartContext';
 import { toast } from 'sonner';
 
 

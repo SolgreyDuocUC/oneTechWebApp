@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { MessageCircle, Mail, Phone, MapPin, Send } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
+import { Button } from '../../ui/button';
+import { Input } from '../../ui/input';
+import { Textarea } from '../../ui/textarea';
 import { toast } from 'sonner';
 
 export const ContactPage = () => {

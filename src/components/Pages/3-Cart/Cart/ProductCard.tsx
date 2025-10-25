@@ -1,10 +1,10 @@
 import React from 'react';
 import { ShoppingCart, AlertCircle, Star } from 'lucide-react';
-import { Product } from '../../types';
-import { formatPrice } from '../../utils/validations';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
-import { reviews } from '../../data/mockResenia';
+import { Product } from '../../../../types';
+import { formatPrice } from '../../../../utils/validations';
+import { Button } from '../../../ui/button';
+import { Badge } from '../../../ui/badge';
+import { reviews } from '../../../../data/mockResenia';
 
 // Propiedades del componente ProductCard
 interface ProductCardProps {

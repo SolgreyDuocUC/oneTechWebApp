@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Star, AlertCircle, ArrowLeft, Package } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { productos } from '../data/mockProductos';
-import {reviews as allReviews} from '../data/mockResenia';
-import { useCart } from '../contexts/CartContext';
-import { useAuth } from '../contexts/AuthContext';
-import { formatPrice } from '../utils/validations';
+import { Button } from '../../ui/button';
+import { Badge } from '../../ui/badge';
+import { Input } from '../../ui/input';
+import { Textarea } from '../../ui/textarea';
+import { productos } from '../../../data/mockProductos';
+import {reviews as allReviews} from '../../../data/mockResenia';
+import { useCart } from '../../../contexts/CartContext';
+import { useAuth } from '../../../contexts/AuthContext';
+import { formatPrice } from '../../../utils/validations';
 import { toast } from 'sonner';
 
 interface ProductDetailPageProps {
