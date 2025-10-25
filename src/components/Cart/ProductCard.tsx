@@ -13,16 +13,12 @@ interface ProductCardProps {
   onViewDetails: (productId: string) => void;
 }
 
-/**
- * Componente ProductCard - Tarjeta de producto
- * Muestra información del producto, precio, stock y permite agregar al carrito
- */
 export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCardProps) => {
-  // Verificar si el stock es bajo o está agotado
+  // Verifica si el stock es bajo o está agotado
   const isLowStock = product.stockCritico && product.stock <= product.stockCritico;
   const isOutOfStock = product.stock === 0;
   
-  // Calcular calificación promedio del producto
+  // Calcula calificación promedio del producto
   const productReviews = reviews.filter(r => r.productId === product.id);
   const avgRating = productReviews.length > 0
     ? productReviews.reduce((sum, r) => sum + r.calificacion, 0) / productReviews.length

@@ -25,7 +25,6 @@ export const regiones: Region[] = [
   }
 ];
 
-// Catálogo de productos disponibles
 export const productos: Product[] = [
   {
     id: '1',
@@ -36,7 +35,7 @@ export const productos: Product[] = [
     stock: 15,
     stockCritico: 5,
     categoria: 'Periféricos',
-    imagen: 'https://images.unsplash.com/photo-1629429408719-a64b3ae484e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnYW1pbmclMjBzZXR1cCUyMGtleWJvYXJkJTIwbW91c2V8ZW58MXx8fHwxNzYwNjM4OTMxfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    imagen: 'https://m.media-amazon.com/images/I/71h45LTINwL._AC_SL1500_.jpg',
     featured: true
   },
   {
@@ -48,7 +47,7 @@ export const productos: Product[] = [
     stock: 23,
     stockCritico: 8,
     categoria: 'Audio',
-    imagen: 'https://images.unsplash.com/photo-1641169707717-5704974b69dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnYW1pbmclMjBoZWFkc2V0JTIwcmdifGVufDF8fHx8MTc2MDYzODkzMXww&ixlib=rb-4.1.0&q=80&w=1080',
+    imagen: 'https://media.spdigital.cl/thumbnails/products/1756390473351-arcus1_d4a0bf48_e77646b7_thumbnail_512.jpg',
     featured: true
   },
   {
@@ -60,7 +59,7 @@ export const productos: Product[] = [
     stock: 8,
     stockCritico: 3,
     categoria: 'Sillas',
-    imagen: 'https://images.unsplash.com/photo-1551033541-2075d8363c66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnYW1pbmclMjBjaGFpciUyMGRlc2t8ZW58MXx8fHwxNzYwNjM4OTMxfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    imagen: 'https://m.media-amazon.com/images/I/813lzbP5UoL._AC_SL1500_.jpg',
     featured: false
   },
   {
@@ -72,7 +71,7 @@ export const productos: Product[] = [
     stock: 12,
     stockCritico: 4,
     categoria: 'Monitores',
-    imagen: 'https://images.unsplash.com/photo-1758410473607-e78a23fd6e57?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnYW1pbmclMjBtb25pdG9yJTIwc2NyZWVufGVufDF8fHx8MTc2MDYzODkzMnww&ixlib=rb-4.1.0&q=80&w=1080',
+    imagen: 'https://http2.mlstatic.com/D_NQ_NP_2X_874805-MLA96135207215_102025-F.webp',
     featured: true
   },
   {
@@ -96,7 +95,7 @@ export const productos: Product[] = [
     stock: 5,
     stockCritico: 2,
     categoria: 'Computadores',
-    imagen: 'https://images.unsplash.com/photo-1653132491302-fbee23efb785?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnYW1pbmclMjBwYyUyMGNvbXB1dGVyfGVufDF8fHx8MTc2MDYzODkzMnww&ixlib=rb-4.1.0&q=80&w=1080',
+    imagen: 'https://m.media-amazon.com/images/I/71ENeVg0MuL._AC_SX466_.jpg',
     featured: true
   },
   {
@@ -108,7 +107,7 @@ export const productos: Product[] = [
     stock: 42,
     stockCritico: 15,
     categoria: 'Periféricos',
-    imagen: 'https://images.unsplash.com/photo-1629429408719-a64b3ae484e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnYW1pbmclMjBzZXR1cCUyMGtleWJvYXJkJTIwbW91c2V8ZW58MXx8fHwxNzYwNjM4OTMxfDA&ixlib=rb-4.1.0&q=80&w=1080',
+    imagen: 'https://rimage.ripley.cl/home.ripley/Attachment/MKP/1299/MPM00021978732/Image-1.jpg',
     featured: false
   },
   {
@@ -120,12 +119,11 @@ export const productos: Product[] = [
     stock: 3,
     stockCritico: 1,
     categoria: 'Audio',
-    imagen: 'https://images.unsplash.com/photo-1641169707717-5704974b69dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnYW1pbmclMjBoZWFkc2V0JTIwcmdifGVufDF8fHx8MTc2MDYzODkzMXww&ixlib=rb-4.1.0&q=80&w=1080',
+    imagen: 'https://m.media-amazon.com/images/I/61sa7TrZZzL._AC_SL1280_.jpg',
     featured: false
   }
 ];
 
-// Usuarios registrados en el sistema (datos de prueba)
 export const usuarios: User[] = [
   {
     id: '1',
@@ -159,7 +157,7 @@ export const usuarios: User[] = [
   }
 ];
 
-// Artículos del blog
+
 export const blogPosts: BlogPost[] = [
   {
     id: '1',
@@ -168,7 +166,7 @@ export const blogPosts: BlogPost[] = [
     contenido: 'En este artículo exploramos las mejores configuraciones de PC gaming para diferentes rangos de precio...',
     autor: 'One Tech Team',
     fecha: '2025-01-15',
-    imagen: 'https://images.unsplash.com/photo-1653132491302-fbee23efb785?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxnYW1pbmclMjBwYyUyMGNvbXB1dGVyfGVufDF8fHx8MTc2MDYzODkzMnww&ixlib=rb-4.1.0&q=80&w=1080',
+    imagen: 'https://images.pexels.com/photos/7046976/pexels-photo-7046976.jpeg?_gl=1*161grab*_ga*MTU5ODgyMTE4OC4xNzYxMzYzNTM4*_ga_8JE65Q40S6*czE3NjEzNjM1MzgkbzEkZzEkdDE3NjEzNjM1NTAkajQ4JGwwJGgw',
     categoria: 'Hardware'
   },
   {
