@@ -1,7 +1,5 @@
-import React from 'react';
 import { productos } from '../../../data/mockProductos';
 import { useCart } from '../../../contexts/CartContext';
-import { toast } from 'sonner';
 import HomeCarousel from './HomeComponents/Carrusel';
 import Beneficios from './HomeComponents/Beneficios';
 import ProductosDestacados from './HomeComponents/ProductosDestacados';
@@ -18,11 +16,6 @@ export const HomePage = ({ onNavigate }: HomePageProps) => {
   const computadores = productos.filter((p) => p.categoria === 'Computadores');
   const perifericos = productos.filter((p) => p.categoria === 'Periféricos');
   const monitores = productos.filter((p) => p.categoria === 'Monitores');
-
-  const handleAddToCart = (productId: string) => {
-    addToCart(productId, 1);
-    toast.success('Producto agregado al carrito');
-  };
 
   return (
     <div className="min-h-screen">
