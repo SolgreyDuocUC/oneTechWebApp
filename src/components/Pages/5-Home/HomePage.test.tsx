@@ -28,5 +28,15 @@ describe('HomePage', () => {
             }));
     });
 
+    test("Debe seleccionar la categoría", () => {
+
+        const mockSeleccionarCategoria = vi.fn();
+            vi.mock("./HomeComponents/SeccionCategoria", () => ({
+                onNavigate: () => ({
+                    onclick: mockSeleccionarCategoria
+                })
+            }))
+        }) 
+
 })
 

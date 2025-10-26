@@ -1,6 +1,6 @@
-import React from 'react';
+
 import { ShoppingCart, AlertCircle, Star } from 'lucide-react';
-import { Product } from '../../../../types';
+import type { Product } from '../../../../types';
 import { formatPrice } from '../../../../utils/validations';
 import { Button } from '../../../ui/button';
 import { Badge } from '../../../ui/badge';
