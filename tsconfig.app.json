@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "include": "src",
+    "types": ["vite/client", "vitest/globals", "node", "react", "react-dom"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]

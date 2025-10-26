@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
-import React from "react";
-import { AdminPage as Admin } from "../../components/Pages/1-Admin/AdminPage";
+import { AdminPage as Admin } from "../../../components/Pages/1-Admin/AdminPage";
 
 describe("1-Admin page", () => {
   it("monta sin crashear", () => {
