@@ -6,7 +6,7 @@ import HomeCarousel from './HomeComponents/Carrusel';
 import Beneficios from './HomeComponents/Beneficios';
 import ProductosDestacados from './HomeComponents/ProductosDestacados';
 import SeccionCategoria from './HomeComponents/SeccionCategoria';
-import { HomePageProps } from './Interface/HomePageProps';
+import type { HomePageProps } from './Interface/HomePageProps';
 
 export const HomePage = ({ onNavigate }: HomePageProps) => {
   const { addToCart } = useCart();
