@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import {userEvent} from "@testing-library/user-event";
 import { renderWithProviders } from "../../setup/test-utils";
 import { BlogPage as Blog } from "@/components/Pages/2-Blog/BlogPage";
 
