@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { Toaster } from './components/ui/sonner';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
@@ -13,6 +12,7 @@ import { RegisterPage } from './components/Pages/8-Register/RegisterPage';
 import { BlogPage } from './components/Pages/2-Blog/BlogPage';
 import { ContactPage } from './components/Pages/9-Contact/ContactPage';
 import { AdminPage } from './components/Pages/1-Admin/AdminPage';
+import { useState } from 'react';
 
 type PageType =
   | 'home'
@@ -22,6 +22,7 @@ type PageType =
   | 'login'
   | 'register'
   | 'blog'
+  | 'blog-detail'
   | 'contact'
   | 'admin';
 
@@ -83,3 +84,31 @@ export default function App() {
     </AuthProvider>
   );
 }
+
+
+/*
+import { BlogPage } from './components/Pages/2-Blog/BlogPage';
+import { BlogDetailPage } from './components/Pages/2-Blog/BlogDetailPage'; // 👈 importa
+
+// ...
+const renderPage = () => {
+  switch (navigationState.page) {
+    // ...
+    case 'blog':
+      return <BlogPage onNavigate={handleNavigate} />;
+
+    case 'blog-detail': // nueva ruta
+      return (
+        <BlogDetailPage
+          post={navigationState.data}
+          onNavigate={handleNavigate}
+        />
+      );
+
+    // ...
+    default:
+      return <HomePage onNavigate={handleNavigate} />;
+  }
+};
+
+*/
