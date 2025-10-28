@@ -1,42 +1,24 @@
-import { describe, test, vi } from "vitest";
+import { describe, test, expect, vi } from "vitest";
+import { screen, fireEvent } from "@testing-library/react";
+import { mockAddToCart, renderHomePage } from "@/helpers/renderHomePage";
 
+describe("HomePage", () => {
+  test("Debe renderizar correctamente las secciones principales", () => {
+    renderHomePage();
 
-describe('HomePage', () => {
+    expect(screen.getByText(/Sobre One Tech/i)).toBeInTheDocument();
+    expect(screen.getByText(/Computadores Gamer/i)).toBeInTheDocument();
+    expect(screen.getByText(/Periféricos Gaming/i)).toBeInTheDocument();
+  });
 
-    //Simulación de agregar elementos al carrito
-    test("Debe simular agregar un elemento al carrito", () => {
+  test("Debe permitir agregar un producto al carrito", async () => {
+    renderHomePage();
 
-        const mockAddToCart = vi.fn();
-        vi.mock("../../../contexts/CartContext", () => ({
-            useCart: () => ({
-        addToCart: mockAddToCart,
-            }),
-        }));
-    })
+    // Simula clic en el primer botón de 'Agregar al carrito'
+    const botones = await screen.findAllByRole("button", { name: /agregar al carrito/i });
+    fireEvent.click(botones[0]);
 
-    //Prueba que sonner funcione bien
-    //Sonner: es una librería de React para crear mensajes 
-    //de tipo "toast" (notificaciones emergentes) de forma 
-    //elegante y eficiente.
-    test("Debe mostrar las notificaciones con el sonner", () => {
-
-        const mockToastSuccess = vi.fn();
-            vi.mock("sonner", () => ({
-                toast: {
-                    success: mockToastSuccess,
-                },
-            }));
-    });
-
-    test("Debe seleccionar la categoría", () => {
-
-        const mockSeleccionarCategoria = vi.fn();
-            vi.mock("./HomeComponents/SeccionCategoria", () => ({
-                onNavigate: () => ({
-                    onclick: mockSeleccionarCategoria
-                })
-            }))
-        }) 
-
-})
+    expect(mockAddToCart).toHaveBeenCalledTimes(1);
+  });
+});
 
