@@ -3,7 +3,7 @@ import { ProductCard } from '../../3-Cart/Cart/ProductCard';
 import { Button } from '../../../ui/button';
 import { ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-import { Props } from '../Interface/Props';
+import type { Props } from '../Interface/Props';
 
 
 const ProductosDestacados: React.FC<Props> = ({ productos, onNavigate, addToCart }) => {

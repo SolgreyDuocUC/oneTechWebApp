@@ -1,9 +1,9 @@
 import React from 'react';
-import { Product } from '../../../../types';
+import type { Product } from '../../../../types';
 import { ProductCard } from '../../3-Cart/Cart/ProductCard';
 import { Button } from '../../../ui/button';
 import { ArrowRight } from 'lucide-react';
-import { HomePageProps } from '../Interface/HomePageProps';
+import type { HomePageProps } from '../Interface/HomePageProps';
 
 interface Props {
   productos: Product[];

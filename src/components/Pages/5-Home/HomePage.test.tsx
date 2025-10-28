@@ -1,9 +1,9 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { describe, expect, test, vi, beforeEach } from "vitest";
-import React from "react";
-import { HomePage } from "./HomePage";
+import { describe, test, vi } from "vitest";
+
 
 describe('HomePage', () => {
+
+    //Simulación de agregar elementos al carrito
     test("Debe simular agregar un elemento al carrito", () => {
 
         const mockAddToCart = vi.fn();
@@ -13,5 +13,30 @@ describe('HomePage', () => {
             }),
         }));
     })
+
+    //Prueba que sonner funcione bien
+    //Sonner: es una librería de React para crear mensajes 
+    //de tipo "toast" (notificaciones emergentes) de forma 
+    //elegante y eficiente.
+    test("Debe mostrar las notificaciones con el sonner", () => {
+
+        const mockToastSuccess = vi.fn();
+            vi.mock("sonner", () => ({
+                toast: {
+                    success: mockToastSuccess,
+                },
+            }));
+    });
+
+    test("Debe seleccionar la categoría", () => {
+
+        const mockSeleccionarCategoria = vi.fn();
+            vi.mock("./HomeComponents/SeccionCategoria", () => ({
+                onNavigate: () => ({
+                    onclick: mockSeleccionarCategoria
+                })
+            }))
+        }) 
+
 })
 
