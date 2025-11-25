@@ -60,7 +60,7 @@ export const CartPage = ({ onNavigate }: CartPageProps) => {
           <ShoppingBag className="w-24 h-24 mx-auto mb-6 text-gray-600" />
           <h2 className="text-3xl mb-4 text-gray-400">Tu carrito está vacío</h2>
           <p className="text-gray-500 mb-8">
-            Agrega productos a tu carrito para continuar comprando
+            Agrega products a tu carrito para continuar comprando
           </p>
           <Button
             onClick={() => onNavigate('catalog')}
@@ -79,7 +79,7 @@ export const CartPage = ({ onNavigate }: CartPageProps) => {
         <h1 className="text-4xl mb-8 text-[var(--neon-green)]">Carrito de Compras</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Lista de productos */}
+          {/* Lista de products */}
           <div className="lg:col-span-2 space-y-4">
             {cart.map((item) => {
               const product = getProductById(item.productId);
@@ -139,7 +139,7 @@ export const CartPage = ({ onNavigate }: CartPageProps) => {
                       <button
                         onClick={() => {
                           removeFromCart(item.productId);
-                          toast.success('Producto eliminado del carrito');
+                          toast.success('Production eliminado del carrito');
                         }}
                         className="text-red-500 hover:text-red-400 transition-colors flex items-center gap-1"
                       >
@@ -211,7 +211,7 @@ export const CartPage = ({ onNavigate }: CartPageProps) => {
                 onClick={handleCheckout}
                 className="w-full bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"
               >
-                Proceder al Pago
+                Procedure al Pago
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
 
