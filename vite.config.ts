@@ -61,3 +61,12 @@
       open: true,
     },
   });
+
+// Librería de consumo de APIs Rets: npm install axios
+
+/*
+CORREGIR VULNERABILIDADES DE SEGURIDAD:
+  npm audit fix
+  npm audit fix --force
+*/
+

@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShoppingCart, Star, AlertCircle, ArrowLeft, Package } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Input } from '../../ui/input';
 import { Textarea } from '../../ui/textarea';
-import { productos } from '../../../data/mockProductos';
 import {reviews as allReviews} from '../../../data/mockResenia';
 import { useCart } from '../../../contexts/CartContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { formatPrice } from '../../../utils/validations';
 import { toast } from 'sonner';
+import { getProductById } from '../../../service/productService';
+import type { Product } from '../../../types';
 
 interface ProductDetailPageProps {
   productId: string;
@@ -18,12 +19,28 @@ interface ProductDetailPageProps {
 
 export const ProductDetailPage = ({ productId, onNavigate }: ProductDetailPageProps) => {
   const { addToCart } = useCart();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [newReview, setNewReview] = useState({ calificacion: 5, comentario: '' });
 
-  const product = productos.find((p) => p.id === productId);
+  useEffect(() => {
+    setLoading(true);
+    getProductById(productId)
+      .then(setProduct)
+      .catch(err => {
+        console.error("Error al cargar el producto:", err);
+        toast.error("No se pudo cargar el producto.");
+      })
+      .finally(() => setLoading(false));
+  }, [productId]);
+
   const productReviews = allReviews.filter((r) => r.productId === productId);
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-white">Cargando producto...</div>;
+  }
 
   if (!product) {
     return (

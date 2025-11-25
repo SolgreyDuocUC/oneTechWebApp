@@ -1,40 +1,56 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '../../Pages/3-Cart/Cart/ProductCard';
 import { Input } from '../../ui/input';
 import { Button } from '../../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
-import { productos } from '../../../data/mockProductos';
 import { useCart } from '../../../contexts/CartContext';
 import { toast } from 'sonner';
-
+import { getProducts } from '../../../service/productService';
+import type { Product } from '../../../types';
 
 interface CatalogPageProps {
   onNavigate: (page: string, data?: any) => void;
   initialData?: { categoria?: string };
 }
 
-
 export const CatalogPage = ({ onNavigate, initialData }: CatalogPageProps) => {
   const { addToCart } = useCart();
+  const [productos, setProductos] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
 
+  // Traer productos del backend
+  useEffect(() => {
+    getProducts()
+      .then(setProductos)
+      .catch(err => {
+        console.error("Error al cargar productos:", err);
+        toast.error('No se pudieron cargar los productos');
+      });
+  }, []);
+
+  // Inicializar categoría desde props si existe
   useEffect(() => {
     if (initialData?.categoria) {
       setSelectedCategory(initialData.categoria);
     }
   }, [initialData]);
 
-  const categories = ['all', ...Array.from(new Set(productos.map((p) => p.categoria)))];
+  // Generar lista de categorías dinámicamente
+  const categories = useMemo(() => {
+    if (!productos || productos.length === 0) return ['all'];
+    return ['all', ...Array.from(new Set(productos.map((p) => p.categoria)))];
+  }, [productos]);
 
-  const handleAddToCart = (productId: string) => {
-    addToCart(productId, 1);
-    toast.success('Producto agregado al carrito');
-  };
+const handleAddToCart = (productId: string | number) => {
+  addToCart(productId.toString(), 1);
+  toast.success('Producto agregado al carrito');
+};
 
 
+  // Filtrar productos por búsqueda y categoría
   let filteredProducts = productos.filter((product) => {
     const matchesSearch =
       product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -44,7 +60,7 @@ export const CatalogPage = ({ onNavigate, initialData }: CatalogPageProps) => {
     return matchesSearch && matchesCategory;
   });
 
-
+  // Ordenar productos
   filteredProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-asc':
@@ -65,9 +81,7 @@ export const CatalogPage = ({ onNavigate, initialData }: CatalogPageProps) => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl mb-2 text-[var(--neon-green)]">Catálogo de Productos</h1>
-          <p className="text-gray-400">
-            Explora nuestra selección completa de productos gamer
-          </p>
+          <p className="text-gray-400">Explora nuestra selección completa de productos gamer</p>
         </div>
 
         {/* Filtros */}
@@ -143,18 +157,20 @@ export const CatalogPage = ({ onNavigate, initialData }: CatalogPageProps) => {
           {filteredProducts.length !== 1 ? 's' : ''}
         </div>
 
-        {/* Grid de productos */}
-        {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={handleAddToCart}
-                onViewDetails={(id) => onNavigate('product-detail', { productId: id })}
-              />
-            ))}
-          </div>
+      {/* Grid de productos */}
+      {filteredProducts.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProducts.map((product) => (
+            <ProductCard
+              key={product.id.toString()}
+              product={{ ...product, id: product.id.toString() }}
+              onAddToCart={() => handleAddToCart(product.id.toString())}
+              onViewDetails={() =>
+                onNavigate('product-detail', { productId: product.id.toString() })
+              }
+            />
+          ))}
+        </div>
         ) : (
           <div className="text-center py-16">
             <p className="text-gray-400 text-lg mb-4">No se encontraron productos</p>
