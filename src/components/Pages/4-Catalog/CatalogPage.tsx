@@ -1,13 +1,13 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Search, SlidersHorizontal } from 'lucide-react';
-import { ProductCard } from '../../Pages/3-Cart/Cart/ProductCard';
-import { Input } from '../../ui/input';
-import { Button } from '../../ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
-import { useCart } from '../../../contexts/CartContext';
-import { toast } from 'sonner';
-import { getProducts } from '../../../service/productService';
-import type { Product } from '../../../types';
+import { useState, useEffect, useMemo } from "react";
+import { Search, SlidersHorizontal } from "lucide-react";
+import { ProductCard } from "../../Pages/3-Cart/Cart/ProductCard";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { useCart } from "../../../contexts/CartContext";
+import { toast } from "sonner";
+import { getProducts } from "../../../service/productService";
+import type { Product } from "../../../types";
 
 interface CatalogPageProps {
   onNavigate: (page: string, data?: any) => void;
@@ -16,75 +16,128 @@ interface CatalogPageProps {
 
 export const CatalogPage = ({ onNavigate, initialData }: CatalogPageProps) => {
   const { addToCart } = useCart();
-  const [productos, setProductos] = useState<Product[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('featured');
 
-  // Traer productos del backend
+  const [productos, setProductos] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("featured");
+
+  // ────────────────────────────────────────────────
+  // Obtener productos del backend
+  // ────────────────────────────────────────────────
   useEffect(() => {
     getProducts()
-      .then(setProductos)
-      .catch(err => {
+      .then((data) =>
+        setProductos(data.map((p) => ({ ...p, id: p.id.toString() })))
+      )
+      .catch((err) => {
         console.error("Error al cargar productos:", err);
-        toast.error('No se pudieron cargar los productos');
-      });
+        setError("No se pudieron cargar los productos.");
+        toast.error("No se pudieron cargar los productos");
+      })
+      .finally(() => setLoading(false));
   }, []);
 
-  // Inicializar categoría desde props si existe
+  // ────────────────────────────────────────────────
+  // Inicializar categoría si viene desde otra vista
+  // ────────────────────────────────────────────────
   useEffect(() => {
     if (initialData?.categoria) {
-      setSelectedCategory(initialData.categoria);
+      setSelectedCategory(initialData.categoria.toLowerCase().trim());
     }
   }, [initialData]);
 
-  // Generar lista de categorías dinámicamente
+  // ────────────────────────────────────────────────
+  // Categorías dinámicas normalizadas
+  // ────────────────────────────────────────────────
   const categories = useMemo(() => {
-    if (!productos || productos.length === 0) return ['all'];
-    return ['all', ...Array.from(new Set(productos.map((p) => p.categoria)))];
+    if (!productos.length) return ["all"];
+    const unique = Array.from(
+      new Set(
+        productos.map((p) => p.categoria.toLowerCase().trim())
+      )
+    );
+    return ["all", ...unique];
   }, [productos]);
 
-const handleAddToCart = (productId: string | number) => {
-  addToCart(productId.toString(), 1);
-  toast.success('Producto agregado al carrito');
-};
+  // ────────────────────────────────────────────────
+  // Filtros + búsqueda + ordenamiento optimizados
+  // ────────────────────────────────────────────────
+  const filteredProducts = useMemo(() => {
+    const search = searchTerm.toLowerCase();
 
+    const filtered = productos.filter((product) => {
+      const matchSearch =
+        product.nombre.toLowerCase().includes(search) ||
+        product.descripcion.toLowerCase().includes(search);
 
-  // Filtrar productos por búsqueda y categoría
-  let filteredProducts = productos.filter((product) => {
-    const matchesSearch =
-      product.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.descripcion.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === 'all' || product.categoria === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+      const matchCategory =
+        selectedCategory === "all" ||
+        product.categoria.toLowerCase().trim() === selectedCategory;
 
-  // Ordenar productos
-  filteredProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case 'price-asc':
-        return a.precio - b.precio;
-      case 'price-desc':
-        return b.precio - a.precio;
-      case 'name':
-        return a.nombre.localeCompare(b.nombre);
-      case 'featured':
-      default:
-        return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
-    }
-  });
+      return matchSearch && matchCategory;
+    });
+
+    return filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "price-asc":
+          return a.precio - b.precio;
+        case "price-desc":
+          return b.precio - a.precio;
+        case "name":
+          return a.nombre.localeCompare(b.nombre);
+        case "featured":
+        default:
+          return Number(b.featured) - Number(a.featured);
+      }
+    });
+  }, [productos, searchTerm, selectedCategory, sortBy]);
+
+  // ────────────────────────────────────────────────
+  // Agregar al carrito
+  // ────────────────────────────────────────────────
+  const handleAddToCart = (productId: string) => {
+    addToCart(productId, 1);
+    toast.success("Producto agregado al carrito");
+  };
+
+  // ────────────────────────────────────────────────
+  // Render
+  // ────────────────────────────────────────────────
+  if (loading) {
+    return (
+      <div className="text-center py-20 text-gray-400 text-lg">
+        Cargando productos...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-20 text-red-400 text-lg">
+        {error}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
+        
+        {/* HEADER */}
         <div className="mb-8">
-          <h1 className="text-4xl mb-2 text-[var(--neon-green)]">Catálogo de Productos</h1>
-          <p className="text-gray-400">Explora nuestra selección completa de productos gamer</p>
+          <h1 className="text-4xl mb-2 text-[var(--neon-green)]">
+            Catálogo de Productos
+          </h1>
+          <p className="text-gray-400">
+            Explora nuestra selección completa de productos gamer
+          </p>
         </div>
 
-        {/* Filtros */}
+        {/* FILTROS */}
         <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg p-4 mb-8">
           <div className="flex items-center gap-2 mb-4">
             <SlidersHorizontal className="w-5 h-5 text-[var(--neon-green)]" />
@@ -92,6 +145,7 @@ const handleAddToCart = (productId: string | number) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
             {/* Búsqueda */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
@@ -110,15 +164,15 @@ const handleAddToCart = (productId: string | number) => {
                 <SelectValue placeholder="Categoría" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category === 'all' ? 'Todas las categorías' : category}
+                {categories.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c === "all" ? "Todas las categorías" : c}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
 
-            {/* Ordenar */}
+            {/* Orden */}
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
                 <SelectValue placeholder="Ordenar por" />
@@ -130,16 +184,17 @@ const handleAddToCart = (productId: string | number) => {
                 <SelectItem value="price-desc">Precio: Mayor a Menor</SelectItem>
               </SelectContent>
             </Select>
+
           </div>
 
           {/* Botón limpiar filtros */}
-          {(searchTerm || selectedCategory !== 'all' || sortBy !== 'featured') && (
+          {(searchTerm || selectedCategory !== "all" || sortBy !== "featured") && (
             <div className="mt-4">
               <Button
                 onClick={() => {
-                  setSearchTerm('');
-                  setSelectedCategory('all');
-                  setSortBy('featured');
+                  setSearchTerm("");
+                  setSelectedCategory("all");
+                  setSortBy("featured");
                 }}
                 variant="outline"
                 size="sm"
@@ -151,34 +206,37 @@ const handleAddToCart = (productId: string | number) => {
           )}
         </div>
 
-        {/* Resultados */}
+        {/* RESULTADOS */}
         <div className="mb-4 text-gray-400">
-          {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado
-          {filteredProducts.length !== 1 ? 's' : ''}
+          {filteredProducts.length} producto
+          {filteredProducts.length !== 1 ? "s" : ""} encontrado
+          {filteredProducts.length !== 1 ? "s" : ""}
         </div>
 
-      {/* Grid de productos */}
-      {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id.toString()}
-              product={{ ...product, id: product.id.toString() }}
-              onAddToCart={() => handleAddToCart(product.id.toString())}
-              onViewDetails={() =>
-                onNavigate('product-detail', { productId: product.id.toString() })
-              }
-            />
-          ))}
-        </div>
+        {/* GRID */}
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={() => handleAddToCart(product.id)}
+                onViewDetails={() =>
+                  onNavigate("product-detail", { productId: product.id })
+                }
+              />
+            ))}
+          </div>
         ) : (
           <div className="text-center py-16">
-            <p className="text-gray-400 text-lg mb-4">No se encontraron productos</p>
+            <p className="text-gray-400 text-lg mb-4">
+              No se encontraron productos
+            </p>
             <Button
               onClick={() => {
-                setSearchTerm('');
-                setSelectedCategory('all');
-                setSortBy('featured');
+                setSearchTerm("");
+                setSelectedCategory("all");
+                setSortBy("featured");
               }}
               className="bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"
             >
@@ -186,6 +244,7 @@ const handleAddToCart = (productId: string | number) => {
             </Button>
           </div>
         )}
+
       </div>
     </div>
   );
