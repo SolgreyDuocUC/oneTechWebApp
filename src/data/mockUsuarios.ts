@@ -12,7 +12,7 @@ export const usuarios: User[] = [
     direccion: 'Av. Libertador 123',
     region: 'Metropolitana',
     comuna: 'Santiago',
-    rol: 'admin',
+    rol: 'ADMIN',
     puntosLevelUp: 0,
     codigoReferido: 'ADMIN2024'
   },
@@ -27,7 +27,7 @@ export const usuarios: User[] = [
     direccion: 'Paseo Bulnes 456',
     region: 'Metropolitana',
     comuna: 'Providencia',
-    rol: 'cliente',
+    rol: 'CLIENTE',
     puntosLevelUp: 250,
     codigoReferido: 'GAMER2024'
   }
