@@ -1,5 +1,5 @@
-import { HomePageProps } from '../Interface/HomePageProps';
-import { Product } from '../../../../types';
+import type { HomePageProps } from '../Interface/HomePageProps';
+import type { Product } from '../../../../types';
 
 export interface Props {
   productos: Product[];

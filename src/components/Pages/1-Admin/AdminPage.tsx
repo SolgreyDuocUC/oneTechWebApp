@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Package, Users, ShoppingCart, TrendingUp, Plus, Edit, Trash2 } from 'lucide-react';
 import { Button } from '../../ui/button';
 import { Input } from '../../ui/input';
@@ -6,7 +6,7 @@ import { Textarea } from '../../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { useAuth } from '../../../contexts/AuthContext';
 import { productos as initialProductos } from '../../../data/mockProductos';
-import { Product } from '../../../types';
+import type { Product } from '../../../types';
 import { formatPrice, validateProductCode, validatePrice, validateStock } from '../../../utils/validations';
 import { toast } from 'sonner';
 

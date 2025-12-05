@@ -2,7 +2,7 @@ import type { User } from '../types';
 
 export const usuarios: User[] = [
   {
-    id: '1',
+    id: 1,
     run: '12345678',
     nombre: 'Admin',
     apellidos: 'One Tech',
@@ -17,7 +17,7 @@ export const usuarios: User[] = [
     codigoReferido: 'ADMIN2024'
   },
   {
-    id: '2',
+    id: 2,
     run: '87654321',
     nombre: 'Carlos',
     apellidos: 'González',

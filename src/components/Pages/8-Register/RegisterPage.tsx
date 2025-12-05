@@ -139,7 +139,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     
     // Aseguramos que el RUN se envíe formateado o limpio, según lo espere `register`
     // Aquí usamos `formatRUN` para consistencia visual/de almacenamiento.
-    const runFormateado = formatRUN(run); 
+    const runFormateado = formatRUN(run);
 
     const payload: RegisterPayload = {
         ...dataToSend,
@@ -154,8 +154,8 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     } else {
       toast.error('El correo o RUN ya están registrados');
       setErrors({
-         email: 'Este correo ya está registrado',
-         run: 'Este RUN ya está registrado',
+        email: 'Este correo ya está registrado',
+        run: 'Este RUN ya está registrado',
       });
     }
   };
