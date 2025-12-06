@@ -8,7 +8,7 @@ import { regiones } from '../../../data/mockRegiones';
 import { validateRUN, validateEmail, validateAge, formatRUN } from '../../../utils/validations';
 import { toast } from 'sonner';
 
-type UserRole = 'admin' | 'cliente' | 'vendedor';
+type UserRole = 'ADMIN' | 'CLIENTE' | 'VENDEDOR';
 
 
 interface UserData {
@@ -32,31 +32,29 @@ interface RegisterPageProps {
   onNavigate: (page: 'login' | 'home', data?: any) => void;
 }
 
-// --- Componente Principal ---
 
 export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
   const { register } = useAuth();
 
-  // Estado principal con valores iniciales limpios
   const [formData, setFormData] = useState<UserData>({
     run: '',
     nombre: '',
     apellidos: '',
     email: '',
     password: '',
-    confirmPassword: '', // Inicializado
+    confirmPassword: '',
     fechaNacimiento: '',
     direccion: '',
     region: '',
     comuna: '',
-    rol: 'cliente',
+    rol: 'CLIENTE',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Manejador de cambios genérico
   const handleChange = useCallback((
-    key: keyof UserData, 
+    key: keyof UserData,
     value: string | UserRole
   ) => {
     setFormData(prev => ({ ...prev, [key]: value }));
@@ -133,12 +131,8 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
       return;
     }
 
-    // 1. Crear el payload sin `confirmPassword`
-    // 2. Formatear el RUN antes de enviar (ej: 12.345.678-k)
     const { confirmPassword, run, ...dataToSend } = formData;
     
-    // Aseguramos que el RUN se envíe formateado o limpio, según lo espere `register`
-    // Aquí usamos `formatRUN` para consistencia visual/de almacenamiento.
     const runFormateado = formatRUN(run);
 
     const payload: RegisterPayload = {
@@ -159,8 +153,6 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
       });
     }
   };
-
-  // --- Renderizado ---
 
   return (
     <div className="min-h-screen py-12 px-4">
@@ -194,13 +186,13 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                   type="text"
                   placeholder="12.345.678-K"
                   value={formData.run}
-                  onChange={(e) => handleChange('run', e.target.value)} 
+                  onChange={(e) => handleChange('run', e.target.value)}
                   onBlur={(e) => {
                     const runLimpio = e.target.value.replace(/[^0-9kK]/g, '');
                     if (validateRUN(runLimpio)) {
                       setFormData(prev => ({ ...prev, run: formatRUN(runLimpio) }));
                     } else {
-                      validate(); 
+                      validate();
                     }
                   }}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
@@ -278,7 +270,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                   value={formData.fechaNacimiento}
                   onChange={(e) => handleChange('fechaNacimiento', e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
-                  max={new Date().toISOString().split('T')[0]} 
+                  max={new Date().toISOString().split('T')[0]}
                 />
                 {errors.fechaNacimiento && (
                   <p className="text-red-500 text-sm mt-1">{errors.fechaNacimiento}</p>
@@ -303,10 +295,10 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                 <Select
                   value={formData.region}
                   onValueChange={(value: any) => {
-                    setFormData(prev => ({ 
-                      ...prev, 
-                      region: value, 
-                      comuna: '' 
+                    setFormData(prev => ({
+                      ...prev,
+                      region: value,
+                      comuna: ''
                     }));
                   }}
                 >
@@ -364,9 +356,9 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cliente">Cliente</SelectItem>
-                    <SelectItem value="vendedor">Vendedor</SelectItem>
-                    <SelectItem value="admin">Administrador</SelectItem>
+                    <SelectItem value="CLIENTE">Cliente</SelectItem>
+                    <SelectItem value="VENDEDOR">Vendedor</SelectItem>
+                    <SelectItem value="ADMIN">Administrador</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

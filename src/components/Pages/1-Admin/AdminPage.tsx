@@ -32,7 +32,7 @@ export const AdminPage = ({ onNavigate }: AdminPageProps) => {
     featured: false,
   });
 
-  if (user?.rol !== 'admin') {
+  if (user?.rol !== 'ADMIN') {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

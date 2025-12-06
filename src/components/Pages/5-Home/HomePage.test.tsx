@@ -14,10 +14,6 @@ describe('HomePage', () => {
         }));
     })
 
-    //Prueba que sonner funcione bien
-    //Sonner: es una librería de React para crear mensajes 
-    //de tipo "toast" (notificaciones emergentes) de forma 
-    //elegante y eficiente.
     test("Debe mostrar las notificaciones con el sonner", () => {
 
         const mockToastSuccess = vi.fn();

@@ -1,4 +1,6 @@
-export type UserRole = 'ADMIN' | 'CLIENTE';
+type UserRole = 'ADMIN' | 'CLIENTE' | 'VENDEDOR';
+
+//El perfil de vendedor queda para futuras implementaciones, pero se aplica la lógica para utilizarla en las versiones posteriores
 
 export interface User {
   id: number;
