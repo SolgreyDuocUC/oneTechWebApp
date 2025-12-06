@@ -12,8 +12,8 @@ import { RegisterPage } from "./components/Pages/8-Register/RegisterPage";
 import { BlogPage } from "./components/Pages/2-Blog/BlogPage";
 import { ContactPage } from "./components/Pages/9-Contact/ContactPage";
 import { AdminPage } from "./components/Pages/1-Admin/AdminPage";
-import { useState } from "react";
 import { BlogDetail } from "./components/Pages/2-Blog/Post/BlogDetail";
+import { useState, useEffect } from "react";
 
 type PageType =
   | "home"
@@ -36,6 +36,29 @@ export default function App() {
   const [navigationState, setNavigationState] = useState<NavigationState>({
     page: "home",
   });
+
+  const [, setFetchData] = useState(null);
+
+  useEffect(() => {
+    
+    const fetchHealthCheck = async () => {
+      try {
+        const response = await fetch("http://localhost:8050");
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setFetchData(data);
+        console.log("Backend response:", data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchHealthCheck();
+  }, []);
 
   const handleNavigate = (page: string, data?: any) => {
     setNavigationState({ page: page as PageType, data });
