@@ -1,56 +1,38 @@
-import React, { useState } from 'react';
-import { Mail, Lock, LogIn } from 'lucide-react';
-import { Button } from '../../ui/button';
-import { Input } from '../../ui/input';
-import { useAuth } from '../../../contexts/AuthContext';
-import { validateEmail } from '../../../utils/validations';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import { Mail, Lock, LogIn } from "lucide-react";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { validateEmail } from "../../../utils/validations";
+import { toast } from "sonner";
+import { UserService } from "../../../service/userService";
 
 interface LoginPageProps {
-  onNavigate: (page: string, data?: any) => void;
+  onNavigate: (page: string) => void;
 }
 
 export const LoginPage = ({ onNavigate }: LoginPageProps) => {
-  const { login } = useAuth();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState<any>({});
 
   const validate = () => {
-    const newErrors: { email?: string; password?: string } = {};
-
-    if (!formData.email) {
-      newErrors.email = 'El correo es obligatorio';
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email =
-        'Correo inválido. Dominios permitidos: @duoc.cl, @profesor.duoc.cl, @gmail.com';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'La contraseña es obligatoria';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'La contraseña debe tener al menos 6 caracteres';
-    }
-
+    const newErrors: any = {};
+    if (!validateEmail(formData.email)) newErrors.email = "Correo inválido";
+    if (!formData.password) newErrors.password = "Contraseña obligatoria";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validate()) return;
 
-    const success = login(formData.email, formData.password);
-
-    if (success) {
-      toast.success('Sesión iniciada correctamente');
-      onNavigate('home');
-    } else {
-      toast.error('Credenciales incorrectas');
-      setErrors({ password: 'Usuario o contraseña incorrectos' });
+    try {
+      await UserService.login(formData.email, formData.password);
+      toast.success("Inicio de sesión correcto");
+      onNavigate("home");
+    } catch {
+      toast.error("Credenciales incorrectas");
+      setErrors({ password: "Correo o contraseña incorrectos" });
     }
   };
 
@@ -64,14 +46,13 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
 
         <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
+
             <div>
               <label className="text-gray-300 mb-2 block">Correo Electrónico</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <Input
                   type="email"
-                  placeholder="tu@email.com"
                   value={formData.email}
                   onChange={(e) => {
                     setFormData({ ...formData, email: e.target.value });
@@ -83,14 +64,12 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
 
-            {/* Password */}
             <div>
               <label className="text-gray-300 mb-2 block">Contraseña</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <Input
                   type="password"
-                  placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => {
                     setFormData({ ...formData, password: e.target.value });
@@ -102,18 +81,16 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
               {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
             </div>
 
-            {/* Recuperar contraseña */}
             <div className="text-right">
               <button
                 type="button"
-                onClick={() => toast.info('Recuperación de contraseña (simulado)')}
+                onClick={() => toast.info("Recuperación de contraseña")}
                 className="text-sm text-[var(--neon-green)] hover:text-[var(--neon-purple)] transition-colors"
               >
                 ¿Olvidaste tu contraseña?
               </button>
             </div>
 
-            {/* Botón submit */}
             <Button
               type="submit"
               className="w-full bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"
@@ -123,32 +100,16 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
             </Button>
           </form>
 
-          {/* Link a registro */}
           <div className="mt-6 text-center">
             <p className="text-gray-400">
-              ¿No tienes cuenta?{' '}
+              ¿No tienes cuenta?{" "}
               <button
-                onClick={() => onNavigate('register')}
+                onClick={() => onNavigate("register")}
                 className="text-[var(--neon-green)] hover:text-[var(--neon-purple)] transition-colors"
               >
                 Regístrate aquí
               </button>
             </p>
-          </div>
-
-          {/* Credenciales de prueba */}
-          <div className="mt-6 pt-6 border-t border-gray-800">
-            <p className="text-xs text-gray-500 mb-2">Credenciales de prueba:</p>
-            <div className="space-y-1 text-xs text-gray-400">
-              <p>
-                <strong className="text-[var(--neon-green)]">Admin:</strong> admin@duoc.cl /
-                admin123
-              </p>
-              <p>
-                <strong className="text-[var(--neon-green)]">Cliente:</strong> carlos@gmail.com /
-                cliente123
-              </p>
-            </div>
           </div>
         </div>
       </div>

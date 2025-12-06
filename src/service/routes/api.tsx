@@ -1,28 +1,8 @@
-import axios, { AxiosError } from 'axios';
+import axios from "axios";
 
-const apiClient = axios.create({
-  baseURL: '/api',
+export const api = axios.create({
+  baseURL: "http://localhost:8050",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
-
-export async function post<T, R>(endpoint: string, data: T): Promise<R> {
-  try {
-    const response = await apiClient.post<R>(endpoint, data);
-    return response.data;
-  } catch (error) {
-    const err = error as AxiosError<any>;
-    const message = err.response?.data?.message || 'Error al procesar la solicitud';
-    throw new ApiError(err.response?.status || 500, message);
-  }
-}
-
-export class ApiError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-    this.name = 'ApiError';
-  }
-}

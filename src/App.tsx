@@ -13,7 +13,9 @@ import { BlogPage } from "./components/Pages/2-Blog/BlogPage";
 import { ContactPage } from "./components/Pages/9-Contact/ContactPage";
 import { AdminPage } from "./components/Pages/1-Admin/AdminPage";
 import { BlogDetail } from "./components/Pages/2-Blog/Post/BlogDetail";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+
+let healthCheckExecuted = false;
 
 type PageType =
   | "home"
@@ -39,26 +41,17 @@ export default function App() {
 
   const [, setFetchData] = useState(null);
 
-  useEffect(() => {
-    
-    const fetchHealthCheck = async () => {
-      try {
-        const response = await fetch("http://localhost:8050");
+  if (!healthCheckExecuted) {
+    healthCheckExecuted = true;
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+    fetch("http://localhost:8050")
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+        const data = await res.json();
         setFetchData(data);
-        console.log("Backend response:", data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchHealthCheck();
-  }, []);
+      })
+      .catch(() => {});
+  }
 
   const handleNavigate = (page: string, data?: any) => {
     setNavigationState({ page: page as PageType, data });
