@@ -6,13 +6,8 @@ export const validateRUN = (run: string): boolean => {
 
 // Validación de correo electrónico con dominios permitidos
 export const validateEmail = (email: string): boolean => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return false;
-  
-  const allowedDomains = ['duoc.cl', 'profesor.duoc.cl', 'gmail.com'];
-  const domain = email.split('@')[1];
-  
-  return allowedDomains.includes(domain);
+  const emailRegex = /^[A-Za-z0-9._%+-]+@([A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/;
+  return emailRegex.test(email);
 };
 
 // Validación de edad (mayor de 18 años)

@@ -2,13 +2,24 @@ import React, { useState, useMemo } from "react";
 import { UserPlus, ArrowLeft } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../ui/select";
 import { regiones } from "../../../data/mockRegiones";
-import { validateRUN, validateEmail, validateAge, formatRUN } from "../../../utils/validations";
+import {
+  validateRUN,
+  validateAge,
+  formatRUN,
+} from "../../../utils/validations";
 import { toast } from "sonner";
-import { UserService } from "../../../service/userService";
+import { UserService } from "../../../service/UserService";
 
-type UserRole = "ADMIN" | "CLIENTE" | "VENDEDOR";
+const validateEmail = (email: string) =>
+  /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,10}$/.test(email);
 
 interface RegisterPageProps {
   onNavigate: (page: string) => void;
@@ -26,7 +37,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     direccion: "",
     region: "",
     comuna: "",
-    rol: "CLIENTE" as UserRole,
+    codigoReferido: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,31 +58,41 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
   const validate = () => {
     const newErrors: any = {};
     const runClean = formData.run.replace(/[^0-9kK]/g, "");
+
     if (!validateRUN(runClean)) newErrors.run = "RUN inválido";
     if (!formData.nombre) newErrors.nombre = "Nombre obligatorio";
     if (!formData.apellidos) newErrors.apellidos = "Apellidos obligatorios";
     if (!validateEmail(formData.email)) newErrors.email = "Correo inválido";
     if (formData.password.length < 6) newErrors.password = "Mínimo 6 caracteres";
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Contraseñas no coinciden";
-    if (!formData.fechaNacimiento || !validateAge(formData.fechaNacimiento)) newErrors.fechaNacimiento = "Debes ser mayor de edad";
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Contraseñas no coinciden";
+    if (!formData.fechaNacimiento || !validateAge(formData.fechaNacimiento))
+      newErrors.fechaNacimiento = "Debes ser mayor de edad";
     if (!formData.region) newErrors.region = "Selecciona una región";
     if (!formData.comuna) newErrors.comuna = "Selecciona una comuna";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) return toast.error("Corrige los errores");
 
     try {
-      const payload = { ...formData, run: formatRUN(formData.run) };
+      const payload = {
+        ...formData,
+        run: formatRUN(formData.run),
+      };
+
       delete (payload as any).confirmPassword;
 
       await UserService.register(payload);
+
       toast.success("Registro exitoso");
       onNavigate("login");
-    } catch (err: any) {
+    } catch (err) {
       toast.error("No se pudo registrar");
     }
   };
@@ -96,6 +117,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
         <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
               <div>
                 <label className="text-gray-300 mb-2 block">RUN *</label>
                 <Input
@@ -132,7 +154,9 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                   onChange={(e) => handleChange("apellidos", e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
-                {errors.apellidos && <p className="text-red-500 text-sm mt-1">{errors.apellidos}</p>}
+                {errors.apellidos && (
+                  <p className="text-red-500 text-sm mt-1">{errors.apellidos}</p>
+                )}
               </div>
 
               <div>
@@ -154,7 +178,9 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                   onChange={(e) => handleChange("password", e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
-                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
               </div>
 
               <div>
@@ -192,16 +218,18 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                   onChange={(e) => handleChange("direccion", e.target.value)}
                   className="bg-[#1a1a1a] border-gray-700 text-white"
                 />
-                {errors.direccion && <p className="text-red-500 text-sm mt-1">{errors.direccion}</p>}
+                {errors.direccion && (
+                  <p className="text-red-500 text-sm mt-1">{errors.direccion}</p>
+                )}
               </div>
 
               <div>
                 <label className="text-gray-300 mb-2 block">Región *</label>
                 <Select
                   value={formData.region}
-                  onValueChange={(value: any) => {
-                    setFormData((prev) => ({ ...prev, region: value, comuna: "" }));
-                  }}
+                  onValueChange={(value: any) =>
+                    setFormData((prev) => ({ ...prev, region: value, comuna: "" }))
+                  }
                 >
                   <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
                     <SelectValue placeholder="Selecciona región" />
@@ -214,7 +242,9 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.region && <p className="text-red-500 text-sm mt-1">{errors.region}</p>}
+                {errors.region && (
+                  <p className="text-red-500 text-sm mt-1">{errors.region}</p>
+                )}
               </div>
 
               <div>
@@ -227,7 +257,6 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                   <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
                     <SelectValue placeholder="Selecciona comuna" />
                   </SelectTrigger>
-
                   <SelectContent>
                     {comunasDisponibles.map((comuna) => (
                       <SelectItem key={comuna} value={comuna}>
@@ -236,24 +265,20 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.comuna && <p className="text-red-500 text-sm mt-1">{errors.comuna}</p>}
+                {errors.comuna && (
+                  <p className="text-red-500 text-sm mt-1">{errors.comuna}</p>
+                )}
               </div>
 
               <div>
-                <label className="text-gray-300 mb-2 block">Tipo de Usuario</label>
-                <Select
-                  value={formData.rol}
-                  onValueChange={(value: UserRole) => handleChange("rol", value)}
-                >
-                  <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="CLIENTE">Cliente</SelectItem>
-                    <SelectItem value="VENDEDOR">Vendedor</SelectItem>
-                    <SelectItem value="ADMIN">Administrador</SelectItem>
-                  </SelectContent>
-                </Select>
+                <label className="text-gray-300 mb-2 block">Código de Referido</label>
+                <Input
+                  type="text"
+                  value={formData.codigoReferido}
+                  onChange={(e) => handleChange("codigoReferido", e.target.value)}
+                  className="bg-[#1a1a1a] border-gray-700 text-white"
+                  placeholder="Opcional"
+                />
               </div>
             </div>
 

@@ -4,7 +4,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { validateEmail } from "../../../utils/validations";
 import { toast } from "sonner";
-import { UserService } from "../../../service/userService";
+import { UserService } from "../../../service/UserService";
 
 interface LoginPageProps {
   onNavigate: (page: string) => void;
@@ -16,8 +16,13 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
 
   const validate = () => {
     const newErrors: any = {};
-    if (!validateEmail(formData.email)) newErrors.email = "Correo inválido";
-    if (!formData.password) newErrors.password = "Contraseña obligatoria";
+
+    if (!validateEmail(formData.email))
+      newErrors.email = "El correo no es válido (institucional o normal)";
+
+    if (!formData.password)
+      newErrors.password = "Contraseña obligatoria";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -47,6 +52,7 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
         <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
 
+            {/* EMAIL */}
             <div>
               <label className="text-gray-300 mb-2 block">Correo Electrónico</label>
               <div className="relative">
@@ -56,7 +62,7 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
                   value={formData.email}
                   onChange={(e) => {
                     setFormData({ ...formData, email: e.target.value });
-                    setErrors({ ...errors, email: undefined });
+                    setErrors((prev: any) => ({ ...prev, email: undefined }));
                   }}
                   className="pl-10 bg-[#1a1a1a] border-gray-700 text-white"
                 />
@@ -64,6 +70,7 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
               {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
 
+            {/* PASSWORD */}
             <div>
               <label className="text-gray-300 mb-2 block">Contraseña</label>
               <div className="relative">
@@ -73,7 +80,7 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
                   value={formData.password}
                   onChange={(e) => {
                     setFormData({ ...formData, password: e.target.value });
-                    setErrors({ ...errors, password: undefined });
+                    setErrors((prev: any) => ({ ...prev, password: undefined }));
                   }}
                   className="pl-10 bg-[#1a1a1a] border-gray-700 text-white"
                 />
@@ -84,7 +91,7 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
             <div className="text-right">
               <button
                 type="button"
-                onClick={() => toast.info("Recuperación de contraseña")}
+                onClick={() => onNavigate("recovery")}
                 className="text-sm text-[var(--neon-green)] hover:text-[var(--neon-purple)] transition-colors"
               >
                 ¿Olvidaste tu contraseña?
