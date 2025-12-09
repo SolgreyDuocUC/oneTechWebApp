@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '../../Pages/3-Cart/Cart/ProductCard';
 import { Input } from '../../ui/input';

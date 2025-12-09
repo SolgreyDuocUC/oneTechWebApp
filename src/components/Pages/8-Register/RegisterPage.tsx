@@ -17,7 +17,7 @@ interface UserData {
   apellidos: string;
   email: string;
   password: string;
-  confirmPassword: string; 
+  confirmPassword: string;
   fechaNacimiento: string;
   direccion: string;
   region: string;
