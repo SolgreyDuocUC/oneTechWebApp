@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { ShoppingCart, LogOut, Menu, X, Gamepad2 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { ShoppingCart, LogOut, Menu, X, Gamepad2, Settings } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import { Button } from '../ui/button';
@@ -35,39 +34,11 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 z-50 w-full">
-
-      {/* ---------------- SALUDO ARRIBA (solo logeados) ---------------- */}
-      {isAuthenticated && (
-        <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-black border-b border-[var(--neon-green)] text-gray-200 px-4 py-2 text-sm"
-        >
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <span>
-              Hola, <span className="text-[var(--neon-green)]">{user?.nombre}</span>.
-              <span className="ml-1">Bienvenido a tu espacio gamer favorito.</span>
-            </span>
-
-            <Button
-              onClick={handleLogout}
-              size="sm"
-              variant="outline"
-              className="border-[var(--neon-green)] text-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black hidden sm:flex"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Salir
-            </Button>
-          </div>
-        </motion.div>
-      )}
-
-      {/* ---------------- NAVBAR PRINCIPAL ---------------- */}
       <div className="bg-black border-b-2 border-[var(--neon-green)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
 
-            {/* Logo */}
+            {/* LOGO */}
             <div
               className="flex items-center gap-2 cursor-pointer group"
               onClick={() => onNavigate('home')}
@@ -80,7 +51,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               </span>
             </div>
 
-            {/* Desktop Navigation */}
+            {/* NAV DESKTOP */}
             <nav className="hidden md:flex items-center gap-6">
               {navItems.map((item) => (
                 <button
@@ -97,8 +68,9 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               ))}
             </nav>
 
-            {/* Right Side Desktop */}
+            {/* RIGHT DESKTOP */}
             <div className="hidden md:flex items-center gap-4">
+              {/* Carrito */}
               <button
                 onClick={() => onNavigate('cart')}
                 className="relative p-2 text-gray-300 hover:text-[var(--neon-green)] transition-colors"
@@ -111,6 +83,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                 )}
               </button>
 
+              {/* Si NO está autenticado → Ingresar / Registrarse */}
               {!isAuthenticated && (
                 <>
                   <Button
@@ -131,9 +104,28 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                   </Button>
                 </>
               )}
+
+              {/* Si está autenticado → Perfil + Logout */}
+              {isAuthenticated && (
+                <>
+                  <button
+                    onClick={() => onNavigate('profile')}
+                    className="p-2 text-gray-300 hover:text-[var(--neon-green)] transition-colors"
+                  >
+                    <Settings className="w-6 h-6" />
+                  </button>
+
+                  <button
+                    onClick={handleLogout}
+                    className="p-2 text-gray-300 hover:text-red-500 transition-colors"
+                  >
+                    <LogOut className="w-6 h-6" />
+                  </button>
+                </>
+              )}
             </div>
 
-            {/* Mobile buttons */}
+            {/* Mobile menu button */}
             <div className="flex items-center gap-2 md:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -145,14 +137,14 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
           </div>
         </div>
 
-        {/* Mobile dropdown menu */}
+        {/* MOBILE MENU */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-800 px-4 flex flex-col gap-3">
 
-            {/* Saludo en mobile */}
+            {/* Saludo si está autenticado */}
             {isAuthenticated && (
               <div className="text-gray-300 text-sm border-b border-gray-800 pb-3">
-                Hola, <span className="text-[var(--neon-green)]">{user?.nombre}</span>.
+                Hola, <span className="text-[var(--neon-green)]">{user?.nombre}</span>
                 <div>Tu espacio gamer favorito 💚</div>
 
                 <Button
@@ -167,6 +159,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               </div>
             )}
 
+            {/* Items de navegación */}
             {navItems.map((item) => (
               <button
                 key={item.page}
@@ -182,6 +175,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               </button>
             ))}
 
+            {/* Carrito */}
             <button
               onClick={() => {
                 onNavigate('cart');
@@ -193,6 +187,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               Carrito ({cartCount})
             </button>
 
+            {/* Si NO está autenticado */}
             {!isAuthenticated && (
               <>
                 <Button

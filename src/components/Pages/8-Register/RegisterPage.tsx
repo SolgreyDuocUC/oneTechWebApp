@@ -16,7 +16,7 @@ import {
   formatRUN,
 } from "../../../utils/validations";
 import { toast } from "sonner";
-import { UserService } from "../../../service/UserService";
+import { UserService } from "../../../service/userService";
 
 const validateEmail = (email: string) =>
   /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,10}$/.test(email);
