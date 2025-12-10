@@ -1,4 +1,4 @@
-import { api } from "../service/routes/api";
+import { api } from "./api";
 
 const URL = "/api/v1/users";
 

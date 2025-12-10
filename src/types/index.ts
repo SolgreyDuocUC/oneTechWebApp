@@ -1,6 +1,11 @@
-type UserRole = 'ADMIN' | 'CLIENTE' | 'VENDEDOR';
+export type UserRole = 'ADMIN' | 'CLIENTE' | 'VENDEDOR';
 
-//El perfil de vendedor queda para futuras implementaciones, pero se aplica la lógica para utilizarla en las versiones posteriores
+export interface Role {
+  id: number;
+  name: UserRole;
+}
+
+export type Genero = 'FEMENINO' | 'MASCULINO' | 'SIN_ESPECIFICAR';
 
 export interface User {
   id: number;
@@ -8,15 +13,17 @@ export interface User {
   nombre: string;
   apellidos: string;
   email: string;
-  password: string;
+  password?: string; // opcional al recibir datos
   fechaNacimiento: string;
   direccion: string;
   region: string;
   comuna: string;
-  rol: UserRole;
   puntosLevelUp: number;
   codigoReferido?: string;
+  genero: Genero;
+  roles: Role[];
 }
+
 
 export interface Product {
   id: string;

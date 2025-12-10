@@ -16,13 +16,39 @@ import {
   formatRUN,
 } from "../../../utils/validations";
 import { toast } from "sonner";
-import { UserService } from "../../../service/UserService";
+import { UserService } from "../../../service/userService";
 
 const validateEmail = (email: string) =>
   /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,10}$/.test(email);
 
 interface RegisterPageProps {
   onNavigate: (page: string) => void;
+}
+
+export type UserRole = 'ADMIN' | 'CLIENTE' | 'VENDEDOR';
+
+export interface Role {
+  id: number;
+  name: UserRole;
+}
+
+export type Genero = 'FEMENINO' | 'MASCULINO' | 'SIN_ESPECIFICAR';
+
+export interface User {
+  id: number;
+  run: string;
+  nombre: string;
+  apellidos: string;
+  email: string;
+  password?: string;
+  fechaNacimiento: string;
+  direccion: string;
+  region: string;
+  comuna: string;
+  puntosLevelUp: number;
+  codigoReferido?: string;
+  genero: Genero;
+  roles: Role[];
 }
 
 export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
@@ -37,6 +63,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     direccion: "",
     region: "",
     comuna: "",
+    genero: "" as Genero | "",
     codigoReferido: "",
   });
 
@@ -70,6 +97,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
       newErrors.fechaNacimiento = "Debes ser mayor de edad";
     if (!formData.region) newErrors.region = "Selecciona una región";
     if (!formData.comuna) newErrors.comuna = "Selecciona una comuna";
+    if (!formData.genero) newErrors.genero = "Selecciona un género";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -78,7 +106,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) return toast.error("Corrige los errores");
+    if (!validate()) return toast.error("Hay información inválida en tu formulario");
 
     try {
       const payload = {
@@ -209,6 +237,28 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
                   <p className="text-red-500 text-sm mt-1">{errors.fechaNacimiento}</p>
                 )}
               </div>
+              
+              {/* Nuevo campo: Género */}
+              <div>
+                <label className="text-gray-300 mb-2 block">Género *</label>
+                <Select
+                  value={formData.genero}
+                  onValueChange={(value: Genero) => handleChange("genero", value)}
+                >
+                  <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
+                    <SelectValue placeholder="Selecciona género" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="FEMENINO">Femenino</SelectItem>
+                    <SelectItem value="MASCULINO">Masculino</SelectItem>
+                    <SelectItem value="SIN_ESPECIFICAR">Prefiero no especificar</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.genero && (
+                  <p className="text-red-500 text-sm mt-1">{errors.genero}</p>
+                )}
+              </div>
+              {/* Fin Nuevo campo: Género */}
 
               <div>
                 <label className="text-gray-300 mb-2 block">Dirección *</label>

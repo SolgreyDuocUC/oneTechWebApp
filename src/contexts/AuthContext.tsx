@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { User } from '../types';
+import { AuthService } from '../service/AuthService';
 
 // Definir la URL base de tu API REST de Spring Boot
 // NOTA: Ajusta el puerto si tu backend no usa el 8080
@@ -21,13 +22,19 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = async (_email: string): Promise<User | null> => {
-    console.warn("Login simulado. Implementar fetch al endpoint de autenticación.");
-
-    return null;
+  const login = async (email: string, password: string): Promise<User | null> => {
+    try {
+      const userData = await AuthService.login(email, password);
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      console.error("Login failed", error);
+      return null;
+    }
   };
 
   const logout = () => {
+    AuthService.logout();
     setUser(null);
   };
 
