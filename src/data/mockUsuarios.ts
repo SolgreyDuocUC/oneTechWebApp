@@ -1,9 +1,19 @@
-import type { User } from '../types';
+import type { User, Role } from '../types';
+
+const ADMIN_ROLE: Role = {
+  id: 1,
+  name: 'ADMIN',
+};
+
+const CLIENTE_ROLE: Role = {
+  id: 2,
+  name: 'CLIENTE',
+};
 
 export const usuarios: User[] = [
   {
     id: 1,
-    run: '12345678',
+    run: '12345678-9',
     nombre: 'Admin',
     apellidos: 'One Tech',
     email: 'admin@duoc.cl',
@@ -12,13 +22,14 @@ export const usuarios: User[] = [
     direccion: 'Av. Libertador 123',
     region: 'Metropolitana',
     comuna: 'Santiago',
-    rol: 'ADMIN',
     puntosLevelUp: 0,
-    codigoReferido: 'ADMIN2024'
+    codigoReferido: 'ADMIN',
+    genero: 'MASCULINO',
+    roles: [ADMIN_ROLE],
   },
   {
     id: 2,
-    run: '87654321',
+    run: '87654321-K',
     nombre: 'Carlos',
     apellidos: 'González',
     email: 'carlos@gmail.com',
@@ -27,8 +38,24 @@ export const usuarios: User[] = [
     direccion: 'Paseo Bulnes 456',
     region: 'Metropolitana',
     comuna: 'Providencia',
-    rol: 'CLIENTE',
     puntosLevelUp: 250,
-    codigoReferido: 'GAMER2024'
+    codigoReferido: 'GAMER2024',
+    genero: 'MASCULINO',
+    roles: [CLIENTE_ROLE],
+  },
+  {
+    id: 3,
+    run: '11223344-5',
+    nombre: 'Ana',
+    apellidos: 'Ramírez',
+    email: 'ana@example.com',
+    password: 'clienta456',
+    fechaNacimiento: '1988-10-20',
+    direccion: 'Calle Falsa 123',
+    region: 'Valparaíso',
+    comuna: 'Viña del Mar',
+    puntosLevelUp: 50,
+    genero: 'FEMENINO',
+    roles: [CLIENTE_ROLE],
   }
 ];
