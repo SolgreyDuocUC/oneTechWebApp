@@ -1,89 +1,125 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User } from '../types';
 import { AuthService } from '../service/AuthService';
+import { api } from '../service/api';
+import { jwtDecode } from 'jwt-decode';
 
-// Definir la URL base de tu API REST de Spring Boot
-// NOTA: Ajusta el puerto si tu backend no usa el 8080
-const API_BASE_URL = 'http://localhost:8080/api/v1';
-
-// Tu payload de registro (lo que envías al backend)
 type RegisterPayload = Omit<User, 'id' | 'puntosLevelUp' | 'codigoReferido'>;
 
 interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<User | null>; // Login también debe ser asíncrono
-  logout: () => void;
-  register: (userData: RegisterPayload) => Promise<boolean>;
-  isAuthenticated: boolean;
+  user: User | null;
+  login: (email: string, password: string) => Promise<User | null>;
+  logout: () => void;
+  register: (userData: RegisterPayload) => Promise<boolean>;
+  isAuthenticated: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const getCurrentUser = async (): Promise<User | null> => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+        const decodedToken: any = jwtDecode(token);
+        
+        // CAMBIO CLAVE: Probar 'email' y luego 'sub'
+        const userEmail = decodedToken.email || decodedToken.sub; // <-- Usamos || (o)
+        if (!userEmail) throw new Error("Email no encontrado en el token.");
+
+        const res = await api.get(`/api/v1/users/email/${userEmail}`);
+        return res.data as User;
+    } catch (error) {
+        console.error('Failed to fetch current user or token invalid', error);
+        AuthService.logout();
+        return null;
+    }
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const login = async (email: string, password: string): Promise<User | null> => {
-    try {
-      const userData = await AuthService.login(email, password);
-      setUser(userData);
-      return userData;
-    } catch (error) {
-      console.error("Login failed", error);
-      return null;
-    }
-  };
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const currentUser = await getCurrentUser();
+      setUser(currentUser);
+      setLoading(false);
+    };
+    checkAuthStatus();
+  }, []);
 
-  const logout = () => {
-    AuthService.logout();
-    setUser(null);
-  };
+const login = async (email: string, password: string): Promise<User | null> => {
+    try {
+        await AuthService.login(email, password);
+        
+        const token = localStorage.getItem('token');
+        if (!token) throw new Error("Token no encontrado después del login.");
 
-  const register = async (userData: RegisterPayload): Promise<boolean> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
+        const decodedToken: any = jwtDecode(token);
+        
+        const userEmail = decodedToken.email || decodedToken.sub; // <-- Usamos || (o)
+        if (!userEmail) throw new Error("Email no encontrado en el token.");
 
-      if (response.status === 201) {
-        const createdUser: User = await response.json();
-        setUser(createdUser);
-        return true;
-      }
+        const res = await api.get(`/api/v1/users/email/${userEmail}`);
+        const loggedInUser: User = res.data;
+        
+        setUser(loggedInUser);
+        return loggedInUser;
+    } catch (error) {
+        console.error("Login failed", error);
+        AuthService.logout();
+        return null;
+    }
+};
 
-      const errorResponse = await response.json();
-      console.error('Error del Backend al registrar:', errorResponse);
+  const logout = () => {
+    AuthService.logout();
+    setUser(null);
+  };
 
-      return false;
+  const register = async (userData: RegisterPayload): Promise<boolean> => {
+    try {
+      
+      const res = await api.post("/api/v1/auth/register", userData);
 
-    } catch (error) {
-      console.error('Error de red o el servidor no está corriendo:', error);
-      return false;
-    }
-  };
+      if (res.status === 200) {
+        const createdUser: User = res.data;
+        setUser(createdUser);
+        return true;
+      }
+      
+      return false;
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        register,
-        isAuthenticated: !!user,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    } catch (error) {
+      console.error('Error al registrar usuario:', error);
+      return false;
+    }
+  };
+
+  if (loading) {
+    return null;
+  }
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        register,
+        isAuthenticated: !!user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

@@ -13,7 +13,7 @@ export interface User {
   nombre: string;
   apellidos: string;
   email: string;
-  password?: string; // opcional al recibir datos
+  password?: string;
   fechaNacimiento: string;
   direccion: string;
   region: string;
