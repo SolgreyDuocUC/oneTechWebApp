@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import { Button } from '../ui/button';
 import type { User } from '../../types/index';
+
 interface HeaderProps {
   onNavigate: (page: string) => void;
   currentPage: string;
@@ -24,7 +25,13 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
 
   const handleLogout = () => {
     logout();
+    setIsMenuOpen(false);
     onNavigate('home');
+  };
+
+  const handleNavigate = (page: string) => {
+    onNavigate(page);
+    setIsMenuOpen(false);
   };
 
   const navItems = [
@@ -34,7 +41,6 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
     { label: 'Contacto', page: 'contact' }
   ];
 
-  // Cambio clave: Usar la función isAdmin
   if (isAdmin(user)) {
     navItems.push({ label: 'Admin', page: 'admin' });
   }
@@ -42,39 +48,34 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
   return (
     <header className="sticky top-0 z-50 w-full">
 
-      {isAuthenticated && (
-        <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-black border-b border-[var(--neon-green)] text-gray-200 px-4 py-2 text-sm"
-        >
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <span>
-              Hola, <span className="text-[var(--neon-green)]">{user?.nombre}</span>.
-              <span className="ml-1">Bienvenido a tu espacio gamer favorito.</span>
-            </span>
-
-            <Button
-              onClick={handleLogout}
-              size="sm"
-              variant="outline"
-              className="border-[var(--neon-green)] text-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black hidden sm:flex"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Salir
-            </Button>
-          </div>
-        </motion.div>
-      )}
-
+  {/* Header superior para usuarios autenticados */}
+{isAuthenticated && (
+  <motion.div
+    initial={{ opacity: 0, y: -6 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="bg-black border-b border-[var(--neon-green)] text-gray-200 px-4 py-3"
+  >
+    <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <Button
+        onClick={handleLogout}
+        size="sm"
+        variant="outline"
+        className="border-[var(--neon-green)] text-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black hidden sm:flex"
+      >
+        <LogOut className="w-4 h-4 mr-2" />
+        Salir
+      </Button>
+    </div>
+  </motion.div>
+)}
       <div className="bg-black border-b-2 border-[var(--neon-green)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
 
-            {/* Logo */}
+            {/* LOGO */}
             <div
               className="flex items-center gap-2 cursor-pointer group"
-              onClick={() => onNavigate('home')}
+              onClick={() => handleNavigate('home')}
             >
               <div className="bg-[var(--neon-green)] p-2 rounded-lg group-hover:bg-[var(--neon-purple)] transition-colors">
                 <Gamepad2 className="w-6 h-6 text-black" />
@@ -89,7 +90,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               {navItems.map((item) => (
                 <button
                   key={item.page}
-                  onClick={() => onNavigate(item.page)}
+                  onClick={() => handleNavigate(item.page)}
                   className={`transition-colors ${
                     currentPage === item.page
                       ? 'text-[var(--neon-green)]'
@@ -101,10 +102,11 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               ))}
             </nav>
 
-            {/* Right Side Desktop */}
+            {/* Right Desktop Section */}
             <div className="hidden md:flex items-center gap-4">
+              {/* CARRITO */}
               <button
-                onClick={() => onNavigate('cart')}
+                onClick={() => handleNavigate('cart')}
                 className="relative p-2 text-gray-300 hover:text-[var(--neon-green)] transition-colors"
               >
                 <ShoppingCart className="w-6 h-6" />
@@ -115,16 +117,17 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                 )}
               </button>
 
-              {/* Botones Condicionales para Desktop */}
+              {/* AUTH DESKTOP */}
               {isAuthenticated ? (
                 <>
                   <Button
-                    onClick={() => onNavigate('profile')}
+                    onClick={() => handleNavigate('profile')}
                     className="bg-transparent text-[var(--neon-green)] border border-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black"
                     size="icon"
                   >
                     <Settings className="w-5 h-5" />
                   </Button>
+
                   <Button
                     onClick={handleLogout}
                     variant="outline"
@@ -138,14 +141,15 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               ) : (
                 <>
                   <Button
-                    onClick={() => onNavigate('login')}
+                    onClick={() => handleNavigate('login')}
                     className="bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"
                     size="sm"
                   >
                     Ingresar
                   </Button>
+
                   <Button
-                    onClick={() => onNavigate('register')}
+                    onClick={() => handleNavigate('register')}
                     variant="outline"
                     size="sm"
                     className="border-[var(--neon-green)] text-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black"
@@ -156,10 +160,10 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               )}
             </div>
 
-            {/* Mobile buttons */}
+            {/* MOBILE BUTTONS */}
             <div className="flex items-center gap-2 md:hidden">
               <button
-                onClick={() => onNavigate('cart')}
+                onClick={() => handleNavigate('cart')}
                 className="relative p-2 text-gray-300 hover:text-[var(--neon-green)] transition-colors"
               >
                 <ShoppingCart className="w-6 h-6" />
@@ -169,6 +173,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                   </span>
                 )}
               </button>
+
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="p-2 text-gray-300 hover:text-[var(--neon-green)]"
@@ -179,22 +184,20 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
           </div>
         </div>
 
-        {/* Mobile dropdown menu */}
+        {/* MOBILE MENU */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-800 px-4 flex flex-col gap-3">
 
-            {/* Saludo y Salir/Configuración en mobile */}
+            {/* Saludo y Botones cuando está autenticado */}
             {isAuthenticated ? (
               <div className="text-gray-300 text-sm border-b border-gray-800 pb-3 flex flex-col gap-2">
                 <div>
                   Hola, <span className="text-[var(--neon-green)]">{user?.nombre}</span>.
                 </div>
+
                 <div className="flex justify-between gap-2">
                   <Button
-                    onClick={() => {
-                      onNavigate('profile');
-                      setIsMenuOpen(false);
-                    }}
+                    onClick={() => handleNavigate('profile')}
                     variant="outline"
                     size="sm"
                     className="flex-1 border-[var(--neon-purple)] text-[var(--neon-purple)]"
@@ -202,11 +205,9 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                     <Settings className="w-4 h-4 mr-2" />
                     Configuración
                   </Button>
+
                   <Button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMenuOpen(false);
-                    }}
+                    onClick={handleLogout}
                     variant="outline"
                     size="sm"
                     className="flex-1 border-[var(--neon-green)] text-[var(--neon-green)]"
@@ -217,18 +218,16 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                 </div>
               </div>
             ) : (
-                <div className="text-gray-300 text-sm border-b border-gray-800 pb-3">
-                    Tu espacio gamer favorito
-                </div>
+              <div className="text-gray-300 text-sm border-b border-gray-800 pb-3">
+                Tu espacio gamer favorito
+              </div>
             )}
 
+            {/* NAV MOBILE */}
             {navItems.map((item) => (
               <button
                 key={item.page}
-                onClick={() => {
-                  onNavigate(item.page);
-                  setIsMenuOpen(false);
-                }}
+                onClick={() => handleNavigate(item.page)}
                 className={`text-left py-2 ${
                   currentPage === item.page ? 'text-[var(--neon-green)]' : 'text-gray-300'
                 }`}
@@ -237,35 +236,27 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               </button>
             ))}
 
+            {/* CARRITO MOBILE */}
             <button
-              onClick={() => {
-                onNavigate('cart');
-                setIsMenuOpen(false);
-              }}
+              onClick={() => handleNavigate('cart')}
               className="py-2 text-gray-300 flex items-center gap-2"
             >
               <ShoppingCart className="w-5 h-5" />
               Carrito ({cartCount})
             </button>
 
-            {/* Botones de Login/Register en mobile (solo si no está autenticado) */}
+            {/* Login y Registro si no está autenticado */}
             {!isAuthenticated && (
               <>
                 <Button
-                  onClick={() => {
-                    onNavigate('login');
-                    setIsMenuOpen(false);
-                  }}
+                  onClick={() => handleNavigate('login')}
                   className="bg-[var(--neon-green)] text-black"
                 >
                   Ingresar
                 </Button>
 
                 <Button
-                  onClick={() => {
-                    onNavigate('register');
-                    setIsMenuOpen(false);
-                  }}
+                  onClick={() => handleNavigate('register')}
                   variant="outline"
                   className="border-[var(--neon-green)] text-[var(--neon-green)]"
                 >

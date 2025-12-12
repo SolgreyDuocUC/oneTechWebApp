@@ -1,125 +1,114 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import type { User } from '../types';
-import { AuthService } from '../service/AuthService';
-import { api } from '../service/api';
-import { jwtDecode } from 'jwt-decode';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { loginAPI } from "../service/authApi"; 
+import { UserService } from "../service/userService";
 
-type RegisterPayload = Omit<User, 'id' | 'puntosLevelUp' | 'codigoReferido'>;
 
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<User | null>;
-  logout: () => void;
-  register: (userData: RegisterPayload) => Promise<boolean>;
-  isAuthenticated: boolean;
+// TIPOS DEL USUARIO
+
+export type UserRole = "ADMIN" | "CLIENTE" | "VENDEDOR";
+
+    export interface Role {
+    id: number;
+    name: UserRole;
+    }
+
+    export type Genero = "FEMENINO" | "MASCULINO" | "SIN_ESPECIFICAR";
+
+    export interface User {
+    id: number;
+    run: string;
+    nombre: string;
+    apellidos: string;
+    email: string;
+    fechaNacimiento: string;
+    direccion: string;
+    region: string;
+    comuna: string;
+    puntosLevelUp: number;
+    codigoReferido?: string;
+    genero: Genero;
+    roles: Role[];
+    }
+
+
+    // TIPOS DEL CONTEXTO
+
+    interface AuthContextType {
+    user: User | null;
+    token: string | null;
+    loading: boolean;
+    login: (email: string, password: string) => Promise<boolean>;
+    logout: () => void;
+    isAuthenticated: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+    // CREAR CONTEXTO
 
-const getCurrentUser = async (): Promise<User | null> => {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
+    const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-    try {
-        const decodedToken: any = jwtDecode(token);
-        
-        // CAMBIO CLAVE: Probar 'email' y luego 'sub'
-        const userEmail = decodedToken.email || decodedToken.sub; // <-- Usamos || (o)
-        if (!userEmail) throw new Error("Email no encontrado en el token.");
 
-        const res = await api.get(`/api/v1/users/email/${userEmail}`);
-        return res.data as User;
-    } catch (error) {
-        console.error('Failed to fetch current user or token invalid', error);
-        AuthService.logout();
-        return null;
-    }
-};
+    // PROVIDER
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+    export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(
+        localStorage.getItem("token")
+    );
+    const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
-      setLoading(false);
-    };
-    checkAuthStatus();
-  }, []);
+    // Cargar usuario al entrar
+    const loadUser = async (token: string) => {
+        try {
+        const email = localStorage.getItem("email");
+        if (!email) return;
 
-const login = async (email: string, password: string): Promise<User | null> => {
-    try {
-        await AuthService.login(email, password);
-        
-        const token = localStorage.getItem('token');
-        if (!token) throw new Error("Token no encontrado después del login.");
+        const userData = await UserService.getByEmail(email);
+        setUser(userData);
+        } catch (err) {
+        console.log("Error cargando usuario:", err);
+        }
+    };
 
-        const decodedToken: any = jwtDecode(token);
-        
-        const userEmail = decodedToken.email || decodedToken.sub; // <-- Usamos || (o)
-        if (!userEmail) throw new Error("Email no encontrado en el token.");
+    // LOGIN
+    const login = async (email: string, password: string) => {
+        try {
+        const data = await loginAPI(email, password);
+        if (!data?.accessToken) return false;
 
-        const res = await api.get(`/api/v1/users/email/${userEmail}`);
-        const loggedInUser: User = res.data;
-        
-        setUser(loggedInUser);
-        return loggedInUser;
-    } catch (error) {
-        console.error("Login failed", error);
-        AuthService.logout();
-        return null;
-    }
-};
+        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("email", email);
 
-  const logout = () => {
-    AuthService.logout();
-    setUser(null);
-  };
+        setToken(data.accessToken);
+        await loadUser(data.accessToken);
 
-  const register = async (userData: RegisterPayload): Promise<boolean> => {
-    try {
-      
-      const res = await api.post("/api/v1/auth/register", userData);
+        return true;
+        } catch (error) {
+        console.log(error);
+        return false;
+        }
+    };
 
-      if (res.status === 200) {
-        const createdUser: User = res.data;
-        setUser(createdUser);
-        return true;
-      }
-      
-      return false;
+    // LOGOUT
+    const logout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("email");
+        setToken(null);
+        setUser(null);
+    };
 
-    } catch (error) {
-      console.error('Error al registrar usuario:', error);
-      return false;
-    }
-  };
+    useEffect(() => {
+        if (token) loadUser(token);
+        setLoading(false);
+    }, []);
 
-  if (loading) {
-    return null;
-  }
+    const isAuthenticated = !!token;
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        login,
-        logout,
-        register,
-        isAuthenticated: !!user,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+    return (
+        <AuthContext.Provider value={{ user, token, loading, login, logout, isAuthenticated }}>
+        {children}
+        </AuthContext.Provider>
+    );
+    };
+
+export const useAuth = () => useContext(AuthContext);

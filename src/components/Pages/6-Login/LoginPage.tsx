@@ -4,14 +4,15 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { validateEmail } from "../../../utils/validations";
 import { toast } from "sonner";
-import { UserService } from "../../../service/userService";
+import { useAuth } from "../../../contexts/AuthContext";
 
 interface LoginPageProps {
   onNavigate: (page: string) => void;
 }
 
-
 export const LoginPage = ({ onNavigate }: LoginPageProps) => {
+  const { login } = useAuth();
+
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<any>({});
 
@@ -33,11 +34,19 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
     if (!validate()) return;
 
     try {
-      await UserService.login(formData.email, formData.password);
+      const ok = await login(formData.email, formData.password); // ← AQUÍ SE USA EL CONTEXTO
+
+      if (!ok) {
+        toast.error("Credenciales incorrectas");
+        setErrors({ password: "Correo o contraseña incorrectos" });
+        return;
+      }
+
       toast.success("Inicio de sesión correcto");
       onNavigate("home");
-    } catch {
-      toast.error("Credenciales incorrectas");
+
+    } catch (error) {
+      toast.error("Error al iniciar sesión");
       setErrors({ password: "Correo o contraseña incorrectos" });
     }
   };
