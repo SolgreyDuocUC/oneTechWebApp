@@ -56,6 +56,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
     className="bg-black border-b border-[var(--neon-green)] text-gray-200 px-4 py-3"
   >
     <div className="max-w-7xl mx-auto flex justify-between items-center">
+
       <Button
         onClick={handleLogout}
         size="sm"
