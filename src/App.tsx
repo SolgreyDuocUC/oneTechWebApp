@@ -15,6 +15,7 @@ import { AdminPage } from "./components/Pages/1-Admin/AdminPage";
 import { BlogDetail } from "./components/Pages/2-Blog/Post/BlogDetail";
 import { useState } from "react";
 import { RecoveryPage } from "./components/Pages/6-Login/Recovery";
+import { LoginAdmin } from "./components/Pages/1-Admin/LoginAdminPage";
 
 let healthCheckExecuted = false;
 
@@ -24,13 +25,13 @@ type PageType =
   | "product-detail"
   | "cart"
   | "login"
+  | "login-admin"
   | "register"
   | "blog"
   | "blog-detail"
   | "contact"
   | "admin"
   | "recovery";
-
 
 interface NavigationState {
   page: PageType;
@@ -65,6 +66,7 @@ const renderPage = () => {
   switch (navigationState.page) {
     case "home":
       return <HomePage onNavigate={handleNavigate} />;
+
     case "catalog":
       return (
         <CatalogPage
@@ -72,6 +74,7 @@ const renderPage = () => {
           initialData={navigationState.data}
         />
       );
+
     case "product-detail":
       return (
         <ProductDetailPage
@@ -79,14 +82,22 @@ const renderPage = () => {
           onNavigate={handleNavigate}
         />
       );
+
     case "cart":
       return <CartPage onNavigate={handleNavigate} />;
+
     case "login":
       return <LoginPage onNavigate={handleNavigate} />;
+
+  case "login-admin":
+    return <LoginAdmin onNavigate={handleNavigate} />;
+
     case "register":
       return <RegisterPage onNavigate={handleNavigate} />;
+
     case "blog":
       return <BlogPage onNavigate={handleNavigate} />;
+
     case "blog-detail":
       return (
         <BlogDetail
@@ -94,16 +105,21 @@ const renderPage = () => {
           onBack={() => handleNavigate("blog")}
         />
       );
+
     case "contact":
       return <ContactPage />;
+
     case "admin":
       return <AdminPage onNavigate={handleNavigate} />;
+
     case "recovery":
       return <RecoveryPage onNavigate={handleNavigate} />;
+
     default:
       return <HomePage onNavigate={handleNavigate} />;
   }
 };
+
 
   return (
     <AuthProvider>
