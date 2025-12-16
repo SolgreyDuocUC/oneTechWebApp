@@ -1,114 +1,87 @@
+import type { AuthUser } from "@/remote/DTO/AuthDTO";
+import { AuthService } from "@/remote/service/User/AuthService";
+import type { UserRole } from "@/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { loginAPI } from "../service/authApi"; 
-import { UserService } from "../service/userService";
 
 
-// TIPOS DEL USUARIO
-
-export type UserRole = "ADMIN" | "CLIENTE" | "VENDEDOR";
-
-    export interface Role {
-    id: number;
-    name: UserRole;
-    }
-
-    export type Genero = "FEMENINO" | "MASCULINO" | "SIN_ESPECIFICAR";
-
-    export interface User {
-    id: number;
-    run: string;
-    nombre: string;
-    apellidos: string;
-    email: string;
-    fechaNacimiento: string;
-    direccion: string;
-    region: string;
-    comuna: string;
-    puntosLevelUp: number;
-    codigoReferido?: string;
-    genero: Genero;
-    roles: Role[];
-    }
-
-
-    // TIPOS DEL CONTEXTO
-
-    interface AuthContextType {
-    user: User | null;
-    token: string | null;
+interface AuthContextType {
+    user: AuthUser | null;
     loading: boolean;
+    isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
-    isAuthenticated: boolean;
-}
+    hasRole: (role: UserRole) => boolean;
+    }
 
-    // CREAR CONTEXTO
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-    const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const [user, setUser] = useState<AuthUser | null>(null);
+    const [loading, setLoading] = useState(true);
 
-
-    // PROVIDER
-
-    export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(
-        localStorage.getItem("token")
-    );
-    const [loading, setLoading] = useState<boolean>(true);
-
-    // Cargar usuario al entrar
-    const loadUser = async (token: string) => {
-        try {
+    // Restaurar sesión
+    useEffect(() => {
+        const accessToken = localStorage.getItem("accessToken");
         const email = localStorage.getItem("email");
-        if (!email) return;
+        const roles = localStorage.getItem("roles");
 
-        const userData = await UserService.getByEmail(email);
-        setUser(userData);
-        } catch (err) {
-        console.log("Error cargando usuario:", err);
+        if (accessToken && email && roles) {
+        setUser({
+            email,
+            roles: JSON.parse(roles),
+        });
         }
-    };
+
+        setLoading(false);
+}, []);
 
     // LOGIN
-    const login = async (email: string, password: string) => {
+    const login = async (email: string, password: string): Promise<boolean> => {
         try {
-        const data = await loginAPI(email, password);
-        if (!data?.accessToken) return false;
+        const data = await AuthService.login(email, password);
 
-        localStorage.setItem("token", data.accessToken);
-        localStorage.setItem("email", email);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("roles", JSON.stringify(data.roles));
 
-        setToken(data.accessToken);
-        await loadUser(data.accessToken);
+        setUser({
+            email: data.email,
+            roles: data.roles,
+        });
 
         return true;
         } catch (error) {
-        console.log(error);
+        console.error("Login error:", error);
         return false;
         }
     };
 
     // LOGOUT
     const logout = () => {
-        localStorage.removeItem("token");
+        AuthService.logout();
         localStorage.removeItem("email");
-        setToken(null);
+        localStorage.removeItem("roles");
         setUser(null);
     };
 
-    useEffect(() => {
-        if (token) loadUser(token);
-        setLoading(false);
-    }, []);
-
-    const isAuthenticated = !!token;
-
+    // Helper de roles
+    const hasRole = (role: UserRole): boolean => {
+        return user?.roles.includes(role) ?? false;
+    };
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, logout, isAuthenticated }}>
+        <AuthContext.Provider
+        value={{
+            user,
+            loading,
+            isAuthenticated: !!user,
+            login,
+            logout,
+            hasRole,
+        }}
+        >
         {children}
         </AuthContext.Provider>
     );
-    };
+};
 
 export const useAuth = () => useContext(AuthContext);

@@ -1,10 +1,5 @@
 export type UserRole = 'ADMIN' | 'CLIENTE' | 'VENDEDOR';
 
-export interface Role {
-  id: number;
-  name: UserRole;
-}
-
 export type Genero = 'FEMENINO' | 'MASCULINO' | 'SIN_ESPECIFICAR';
 
 export interface User {
@@ -21,9 +16,8 @@ export interface User {
   puntosLevelUp: number;
   codigoReferido?: string;
   genero: Genero;
-  roles: Role[];
+  roles: UserRole[];
 }
-
 
 export interface Product {
   id: string;
