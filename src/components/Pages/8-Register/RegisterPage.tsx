@@ -16,43 +16,34 @@ import {
   formatRUN,
 } from "../../../utils/validations";
 import { toast } from "sonner";
-import { UserService } from "../../../service/userService";
+import { UserService } from "@/remote/service/User/UserService";
 
-const validateEmail = (email: string) =>
-  /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,10}$/.test(email);
+export type Genero = "FEMENINO" | "MASCULINO" | "SIN_ESPECIFICAR";
+
+interface RegisterFormData {
+  run: string;
+  nombre: string;
+  apellidos: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  fechaNacimiento: string;
+  direccion: string;
+  region: string;
+  comuna: string;
+  genero: Genero | "";
+  codigoReferido: string;
+}
 
 interface RegisterPageProps {
   onNavigate: (page: string) => void;
 }
 
-export type UserRole = 'ADMIN' | 'CLIENTE' | 'VENDEDOR';
-
-export interface Role {
-  id: number;
-  name: UserRole;
-}
-
-export type Genero = 'FEMENINO' | 'MASCULINO' | 'SIN_ESPECIFICAR';
-
-export interface User {
-  id: number;
-  run: string;
-  nombre: string;
-  apellidos: string;
-  email: string;
-  password?: string;
-  fechaNacimiento: string;
-  direccion: string;
-  region: string;
-  comuna: string;
-  puntosLevelUp: number;
-  codigoReferido?: string;
-  genero: Genero;
-  roles: Role[];
-}
+const validateEmail = (email: string) =>
+  /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,10}$/.test(email);
 
 export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     run: "",
     nombre: "",
     apellidos: "",
@@ -63,13 +54,13 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     direccion: "",
     region: "",
     comuna: "",
-    genero: "" as Genero | "",
+    genero: "",
     codigoReferido: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (key: string, value: string) => {
+  const handleChange = (key: keyof RegisterFormData, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => {
       const { [key]: _, ...rest } = prev;
@@ -83,16 +74,17 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
   );
 
   const validate = () => {
-    const newErrors: any = {};
+    const newErrors: Record<string, string> = {};
     const runClean = formData.run.replace(/[^0-9kK]/g, "");
 
     if (!validateRUN(runClean)) newErrors.run = "RUN inválido";
     if (!formData.nombre) newErrors.nombre = "Nombre obligatorio";
     if (!formData.apellidos) newErrors.apellidos = "Apellidos obligatorios";
     if (!validateEmail(formData.email)) newErrors.email = "Correo inválido";
-    if (formData.password.length < 6) newErrors.password = "Mínimo 6 caracteres";
+    if (formData.password.length < 6)
+      newErrors.password = "Mínimo 6 caracteres";
     if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "Contraseñas no coinciden";
+      newErrors.confirmPassword = "Las contraseñas no coinciden";
     if (!formData.fechaNacimiento || !validateAge(formData.fechaNacimiento))
       newErrors.fechaNacimiento = "Debes ser mayor de edad";
     if (!formData.region) newErrors.region = "Selecciona una región";
@@ -106,25 +98,35 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) return toast.error("Hay información inválida en tu formulario");
+    if (!validate()) {
+      toast.error("Hay información inválida en tu formulario");
+      return;
+    }
 
     try {
       const payload = {
-        ...formData,
         run: formatRUN(formData.run),
+        nombre: formData.nombre,
+        apellidos: formData.apellidos,
+        email: formData.email,
+        password: formData.password,
+        fechaNacimiento: formData.fechaNacimiento,
+        direccion: formData.direccion,
+        region: formData.region,
+        comuna: formData.comuna,
+        genero: formData.genero as Genero,
+        codigoReferido: formData.codigoReferido || undefined,
+        roleIds: [],
       };
-
-      delete (payload as any).confirmPassword;
 
       await UserService.register(payload);
 
       toast.success("Registro exitoso");
       onNavigate("login");
-    } catch (err) {
+    } catch (error) {
       toast.error("No se pudo registrar");
     }
   };
-
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">

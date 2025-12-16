@@ -46,8 +46,10 @@ export interface UserCreateDTO {
     region: string;
     comuna: string;
     genero: Genero;
-    roleIds: number[];
+    codigoReferido?: string;
+    roleIds?: number[];
 }
+
 
 export interface UserUpdateDTO {
     nombre?: string;
@@ -58,3 +60,20 @@ export interface UserUpdateDTO {
     genero?: Genero;
     roleIds?: number[];
 }
+
+export interface RegisterFormData {
+    run: string;
+    nombre: string;
+    apellidos: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    fechaNacimiento: string;
+    direccion: string;
+    region: string;
+    comuna: string;
+    genero: Genero | "";
+    codigoReferido: string;
+}
+
+

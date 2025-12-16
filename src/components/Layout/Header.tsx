@@ -4,16 +4,16 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import { Button } from '../ui/button';
-import type { User } from '../../types/index';
+import type { UserRole } from '@/types';
+
 
 interface HeaderProps {
   onNavigate: (page: string) => void;
   currentPage: string;
 }
 
-const isAdmin = (user: User | null | undefined): boolean => {
-  if (!user || !user.roles) return false;
-  return user.roles.some(role => role.name === 'ADMIN');
+const isAdmin = (roles?: UserRole[]): boolean => {
+  return roles?.includes('ADMIN') ?? false;
 };
 
 export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
@@ -41,10 +41,10 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
     { label: 'Contacto', page: 'contact' }
   ];
 
-  if (isAdmin(user)) {
+  if (isAdmin(user?.roles)) {
     navItems.push({ label: 'Admin', page: 'admin' });
   }
-
+  
   return (
     <header className="sticky top-0 z-50 w-full">
 
@@ -192,10 +192,6 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
             {/* Saludo y Botones cuando está autenticado */}
             {isAuthenticated ? (
               <div className="text-gray-300 text-sm border-b border-gray-800 pb-3 flex flex-col gap-2">
-                <div>
-                  Hola, <span className="text-[var(--neon-green)]">{user?.nombre}</span>.
-                </div>
-
                 <div className="flex justify-between gap-2">
                   <Button
                     onClick={() => handleNavigate('profile')}

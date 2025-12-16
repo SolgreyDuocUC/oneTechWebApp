@@ -34,7 +34,7 @@ export const LoginPage = ({ onNavigate }: LoginPageProps) => {
     if (!validate()) return;
 
     try {
-      const ok = await login(formData.email, formData.password); // ← AQUÍ SE USA EL CONTEXTO
+      const ok = await login(formData.email, formData.password);
 
       if (!ok) {
         toast.error("Credenciales incorrectas");

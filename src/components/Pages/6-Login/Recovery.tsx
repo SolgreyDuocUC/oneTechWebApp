@@ -4,7 +4,7 @@ import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
 import { validateEmail } from "../../../utils/validations";
 import { toast } from "sonner";
-import { UserService } from "../../../service/userService";
+import { UserService } from "@/remote/service/User/UserService";
 
     interface RecoveryProps {
     onNavigate: (page: string) => void;
