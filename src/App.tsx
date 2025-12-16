@@ -13,8 +13,10 @@ import { BlogPage } from "./components/Pages/2-Blog/BlogPage";
 import { ContactPage } from "./components/Pages/9-Contact/ContactPage";
 import { AdminPage } from "./components/Pages/1-Admin/AdminPage";
 import { BlogDetail } from "./components/Pages/2-Blog/Post/BlogDetail";
-import { useState } from "react";
 import { RecoveryPage } from "./components/Pages/6-Login/Recovery";
+
+import { useState } from "react";
+import { UserProfilePage } from "./components/Pages/10-UserConfig/UserProfilePage";
 
 let healthCheckExecuted = false;
 
@@ -29,8 +31,8 @@ type PageType =
   | "blog-detail"
   | "contact"
   | "admin"
-  | "recovery";
-
+  | "recovery"
+  | "profile";
 
 interface NavigationState {
   page: PageType;
@@ -61,49 +63,63 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-const renderPage = () => {
-  switch (navigationState.page) {
-    case "home":
-      return <HomePage onNavigate={handleNavigate} />;
-    case "catalog":
-      return (
-        <CatalogPage
-          onNavigate={handleNavigate}
-          initialData={navigationState.data}
-        />
-      );
-    case "product-detail":
-      return (
-        <ProductDetailPage
-          productId={navigationState.data?.productId}
-          onNavigate={handleNavigate}
-        />
-      );
-    case "cart":
-      return <CartPage onNavigate={handleNavigate} />;
-    case "login":
-      return <LoginPage onNavigate={handleNavigate} />;
-    case "register":
-      return <RegisterPage onNavigate={handleNavigate} />;
-    case "blog":
-      return <BlogPage onNavigate={handleNavigate} />;
-    case "blog-detail":
-      return (
-        <BlogDetail
-          post={navigationState.data}
-          onBack={() => handleNavigate("blog")}
-        />
-      );
-    case "contact":
-      return <ContactPage />;
-    case "admin":
-      return <AdminPage onNavigate={handleNavigate} />;
-    case "recovery":
-      return <RecoveryPage onNavigate={handleNavigate} />;
-    default:
-      return <HomePage onNavigate={handleNavigate} />;
-  }
-};
+  const renderPage = () => {
+    switch (navigationState.page) {
+      case "home":
+        return <HomePage onNavigate={handleNavigate} />;
+
+      case "catalog":
+        return (
+          <CatalogPage
+            onNavigate={handleNavigate}
+            initialData={navigationState.data}
+          />
+        );
+
+      case "product-detail":
+        return (
+          <ProductDetailPage
+            productId={navigationState.data?.productId}
+            onNavigate={handleNavigate}
+          />
+        );
+
+      case "cart":
+        return <CartPage onNavigate={handleNavigate} />;
+
+      case "login":
+        return <LoginPage onNavigate={handleNavigate} />;
+
+      case "register":
+        return <RegisterPage onNavigate={handleNavigate} />;
+
+      case "blog":
+        return <BlogPage onNavigate={handleNavigate} />;
+
+      case "blog-detail":
+        return (
+          <BlogDetail
+            post={navigationState.data}
+            onBack={() => handleNavigate("blog")}
+          />
+        );
+
+      case "contact":
+        return <ContactPage />;
+
+      case "admin":
+        return <AdminPage onNavigate={handleNavigate} />;
+
+      case "recovery":
+        return <RecoveryPage onNavigate={handleNavigate} />;
+
+      case "profile":
+        return <UserProfilePage onNavigate={handleNavigate} />;
+
+      default:
+        return <HomePage onNavigate={handleNavigate} />;
+    }
+  };
 
   return (
     <AuthProvider>

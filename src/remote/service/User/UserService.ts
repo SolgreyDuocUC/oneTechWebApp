@@ -1,53 +1,42 @@
 import { api } from "../api";
-import type { User } from "../../../types";
-import type { UserCreateDTO, UserUpdateDTO } from "../../DTO/UserDTO";
+import type { UserDTO, UserCreateDTO, UserUpdateDTO, UserRole } from "../../DTO/UserDTO";
 
 const URL = "/api/v1/users";
 
 export const UserService = {
   // Crear usuario
-  register: async (data: UserCreateDTO): Promise<User> => {
-    const res = await api.post<User>(URL, data);
-    return res.data;
-  },
-
-  // Login (auth)
-  login: async (email: string, password: string): Promise<{
-    token: string;
-    email: string;
-    roles: string[];
-  }> => {
-    const res = await api.post("/api/v1/auth/login", { email, password });
+  register: async (data: UserCreateDTO): Promise<UserDTO> => {
+    const res = await api.post<UserDTO>(URL, data);
     return res.data;
   },
 
   // Listar usuarios
-  getUsers: async (): Promise<User[]> => {
-    const res = await api.get<User[]>(URL);
+  getUsers: async (): Promise<UserDTO[]> => {
+    const res = await api.get<UserDTO[]>(URL);
     return res.data;
   },
 
   // Buscar por ID
-  getUserById: async (id: number): Promise<User> => {
-    const res = await api.get<User>(`${URL}/${id}`);
+  getUserById: async (id: number): Promise<UserDTO> => {
+    const res = await api.get<UserDTO>(`${URL}/${id}`);
     return res.data;
   },
 
   // Buscar por email
-  getByEmail: async (email: string): Promise<User> => {
-    const res = await api.get<User>(`${URL}/email/${email}`);
+  getByEmail: async (email: string): Promise<UserDTO> => {
+    const res = await api.get<UserDTO>(`${URL}/email/${email}`);
     return res.data;
   },
 
   // Buscar por RUN
-  getByRun: async (run: string): Promise<User> => {
-    const res = await api.get<User>(`${URL}/run/${run}`);
+  getByRun: async (run: string): Promise<UserDTO> => {
+    const res = await api.get<UserDTO>(`${URL}/run/${run}`);
     return res.data;
   },
 
   // Actualizar usuario
-  updateUser: async (id: number, data: UserUpdateDTO): Promise<User> => {
-    const res = await api.put<User>(`${URL}/${id}`, data);
+  updateUser: async (id: number, data: UserUpdateDTO): Promise<UserDTO> => {
+    const res = await api.put<UserDTO>(`${URL}/${id}`, data);
     return res.data;
   },
 

@@ -38,3 +38,13 @@ export interface AuthResponse {
     email: string;
     roles: UserRole[];
 }
+
+export interface UserUpdateDTO {
+    nombre: string;
+    apellidos: string;
+    direccion: string;
+    region: string;
+    comuna: string;
+    genero: Genero;
+    roleIds?: number[];
+}
