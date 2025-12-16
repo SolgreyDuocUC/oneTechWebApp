@@ -9,7 +9,7 @@ import { useCart } from '../../../contexts/CartContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { formatPrice } from '../../../utils/validations';
 import { toast } from 'sonner';
-import { getProductById } from '../../../service/productService';
+import { getProductById } from '../../../remote/service/Products/ProductService';
 import type { Product } from '../../../types';
 
 interface ProductDetailPageProps {

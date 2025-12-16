@@ -6,8 +6,8 @@ import { Button } from '../../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../ui/select';
 import { useCart } from '../../../contexts/CartContext';
 import { toast } from 'sonner';
-import { getProducts } from '../../../service/productService';
 import type { Product } from '../../../types';
+import { getProducts } from '@/remote/service/Products/ProductService';
 
 interface CatalogPageProps {
   onNavigate: (page: string, data?: any) => void;

@@ -10,13 +10,10 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { regiones } from "../../../data/mockRegiones";
-import {
-  validateRUN,
-  validateAge,
-  formatRUN,
-} from "../../../utils/validations";
+import { validateRUN, validateAge, formatRUN } from "../../../utils/validations";
 import { toast } from "sonner";
-import { UserService } from "@/remote/service/User/UserService";
+import { AuthService } from "@/remote/service/User/AuthService";
+import type { UserCreateDTO } from "@/remote/DTO/UserDTO";
 
 export type Genero = "FEMENINO" | "MASCULINO" | "SIN_ESPECIFICAR";
 
@@ -104,7 +101,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
     }
 
     try {
-      const payload = {
+      const payload: UserCreateDTO = {
         run: formatRUN(formData.run),
         nombre: formData.nombre,
         apellidos: formData.apellidos,
@@ -114,12 +111,12 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
         direccion: formData.direccion,
         region: formData.region,
         comuna: formData.comuna,
-        genero: formData.genero as Genero,
+        genero: formData.genero || "SIN_ESPECIFICAR",
         codigoReferido: formData.codigoReferido || undefined,
-        roleIds: [],
+        roleIds: [3],
       };
 
-      await UserService.register(payload);
+      await AuthService.register(payload);
 
       toast.success("Registro exitoso");
       onNavigate("login");
@@ -127,6 +124,7 @@ export const RegisterPage = ({ onNavigate }: RegisterPageProps) => {
       toast.error("No se pudo registrar");
     }
   };
+
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-3xl mx-auto">
