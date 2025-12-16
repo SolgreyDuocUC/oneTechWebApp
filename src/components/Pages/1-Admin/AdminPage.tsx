@@ -17,7 +17,7 @@ interface AdminPageProps {
 export const AdminPage = ({ onNavigate }: AdminPageProps) => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'products' | 'users'>('dashboard');
-  const [productos, setProductos] = useState(initialProductos);
+  const [productos, setProductos] = useState<Product[]>(initialProductos);
   const [isCreating, setIsCreating] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
@@ -32,7 +32,7 @@ export const AdminPage = ({ onNavigate }: AdminPageProps) => {
     featured: false,
   });
 
-if (!user?.roles?.some(r => r.name === 'ADMIN')) {
+  if (!user?.roles?.some(r => r === 'ADMIN')) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -56,24 +56,20 @@ if (!user?.roles?.some(r => r.name === 'ADMIN')) {
       toast.error('Por favor completa todos los campos obligatorios');
       return;
     }
-
     if (!validateProductCode(newProduct.codigo)) {
       toast.error('El código debe tener al menos 3 caracteres');
       return;
     }
-
     if (!validatePrice(newProduct.precio || 0)) {
       toast.error('El precio debe ser mayor o igual a 0');
       return;
     }
-
     if (!validateStock(newProduct.stock || 0)) {
       toast.error('El stock debe ser un número entero mayor o igual a 0');
       return;
     }
 
     if (editingProduct) {
-      // Editar producto existente
       setProductos(
         productos.map((p) =>
           p.id === editingProduct.id ? { ...p, ...newProduct } as Product : p
@@ -81,7 +77,6 @@ if (!user?.roles?.some(r => r.name === 'ADMIN')) {
       );
       toast.success('Producto actualizado correctamente');
     } else {
-      // Crear nuevo producto
       const newId = String(Math.max(...productos.map((p) => parseInt(p.id))) + 1);
       setProductos([...productos, { ...newProduct, id: newId } as Product]);
       toast.success('Producto creado correctamente');
