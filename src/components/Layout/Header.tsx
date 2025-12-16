@@ -13,7 +13,7 @@ interface HeaderProps {
 
 const isAdmin = (user: User | null | undefined): boolean => {
   if (!user || !user.roles) return false;
-  return user.roles.some(role => role.name === 'ROLE_ADMIN');
+  return user.roles.some(role => role.name === 'ADMIN');
 };
 
 export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
@@ -47,29 +47,33 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 z-50 w-full">
-      {isAuthenticated && (
-        <motion.div
-          initial={{ opacity: 0, y: -6 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-black border-b border-[var(--neon-green)] text-gray-200 px-4 py-3"
-        >
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <Button
-              onClick={handleLogout}
-              size="sm"
-              variant="outline"
-              className="border-[var(--neon-green)] text-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black hidden sm:flex"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Salir
-            </Button>
-          </div>
-        </motion.div>
-      )}
 
+  {/* Header superior para usuarios autenticados */}
+{isAuthenticated && (
+  <motion.div
+    initial={{ opacity: 0, y: -6 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="bg-black border-b border-[var(--neon-green)] text-gray-200 px-4 py-3"
+  >
+    <div className="max-w-7xl mx-auto flex justify-between items-center">
+
+      <Button
+        onClick={handleLogout}
+        size="sm"
+        variant="outline"
+        className="border-[var(--neon-green)] text-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black hidden sm:flex"
+      >
+        <LogOut className="w-4 h-4 mr-2" />
+        Salir
+      </Button>
+    </div>
+  </motion.div>
+)}
       <div className="bg-black border-b-2 border-[var(--neon-green)]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
+
+            {/* LOGO */}
             <div
               className="flex items-center gap-2 cursor-pointer group"
               onClick={() => handleNavigate('home')}
@@ -82,8 +86,9 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               </span>
             </div>
 
+            {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
-              {navItems.map(item => (
+              {navItems.map((item) => (
                 <button
                   key={item.page}
                   onClick={() => handleNavigate(item.page)}
@@ -98,10 +103,12 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               ))}
             </nav>
 
+            {/* Right Desktop Section */}
             <div className="hidden md:flex items-center gap-4">
+              {/* CARRITO */}
               <button
                 onClick={() => handleNavigate('cart')}
-                className="relative p-2 text-gray-300 hover:text-[var(--neon-green)]"
+                className="relative p-2 text-gray-300 hover:text-[var(--neon-green)] transition-colors"
               >
                 <ShoppingCart className="w-6 h-6" />
                 {cartCount > 0 && (
@@ -111,12 +118,13 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                 )}
               </button>
 
+              {/* AUTH DESKTOP */}
               {isAuthenticated ? (
                 <>
                   <Button
                     onClick={() => handleNavigate('profile')}
+                    className="bg-transparent text-[var(--neon-green)] border border-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black"
                     size="icon"
-                    className="bg-transparent text-[var(--neon-green)] border border-[var(--neon-green)]"
                   >
                     <Settings className="w-5 h-5" />
                   </Button>
@@ -125,7 +133,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                     onClick={handleLogout}
                     variant="outline"
                     size="sm"
-                    className="border-[var(--neon-purple)] text-[var(--neon-purple)]"
+                    className="border-[var(--neon-purple)] text-[var(--neon-purple)] hover:bg-[var(--neon-purple)] hover:text-white"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Salir
@@ -134,18 +142,9 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               ) : (
                 <>
                   <Button
-                    onClick={() => handleNavigate('login-admin')}
-                    variant="outline"
-                    size="sm"
-                    className="border-[var(--neon-green)] text-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black"
-                  >
-                    ADMIN
-                  </Button>
-
-                  <Button
                     onClick={() => handleNavigate('login')}
+                    className="bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"
                     size="sm"
-                    className="bg-[var(--neon-green)] text-black"
                   >
                     Ingresar
                   </Button>
@@ -154,7 +153,7 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
                     onClick={() => handleNavigate('register')}
                     variant="outline"
                     size="sm"
-                    className="border-[var(--neon-green)] text-[var(--neon-green)]"
+                    className="border-[var(--neon-green)] text-[var(--neon-green)] hover:bg-[var(--neon-green)] hover:text-black"
                   >
                     Registrarse
                   </Button>
@@ -162,10 +161,11 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
               )}
             </div>
 
+            {/* MOBILE BUTTONS */}
             <div className="flex items-center gap-2 md:hidden">
               <button
                 onClick={() => handleNavigate('cart')}
-                className="relative p-2 text-gray-300"
+                className="relative p-2 text-gray-300 hover:text-[var(--neon-green)] transition-colors"
               >
                 <ShoppingCart className="w-6 h-6" />
                 {cartCount > 0 && (
@@ -177,26 +177,78 @@ export const Header = ({ onNavigate, currentPage }: HeaderProps) => {
 
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 text-gray-300"
+                className="p-2 text-gray-300 hover:text-[var(--neon-green)]"
               >
-                {isMenuOpen ? <X /> : <Menu />}
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
             </div>
           </div>
         </div>
 
+        {/* MOBILE MENU */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-800 px-4 flex flex-col gap-3">
+
+            {/* Saludo y Botones cuando está autenticado */}
+            {isAuthenticated ? (
+              <div className="text-gray-300 text-sm border-b border-gray-800 pb-3 flex flex-col gap-2">
+                <div>
+                  Hola, <span className="text-[var(--neon-green)]">{user?.nombre}</span>.
+                </div>
+
+                <div className="flex justify-between gap-2">
+                  <Button
+                    onClick={() => handleNavigate('profile')}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-[var(--neon-purple)] text-[var(--neon-purple)]"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Configuración
+                  </Button>
+
+                  <Button
+                    onClick={handleLogout}
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 border-[var(--neon-green)] text-[var(--neon-green)]"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Salir
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-300 text-sm border-b border-gray-800 pb-3">
+                Tu espacio gamer favorito
+              </div>
+            )}
+
+            {/* NAV MOBILE */}
+            {navItems.map((item) => (
+              <button
+                key={item.page}
+                onClick={() => handleNavigate(item.page)}
+                className={`text-left py-2 ${
+                  currentPage === item.page ? 'text-[var(--neon-green)]' : 'text-gray-300'
+                }`}
+              >
+                {item.label}
+              </button>
+            ))}
+
+            {/* CARRITO MOBILE */}
+            <button
+              onClick={() => handleNavigate('cart')}
+              className="py-2 text-gray-300 flex items-center gap-2"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              Carrito ({cartCount})
+            </button>
+
+            {/* Login y Registro si no está autenticado */}
             {!isAuthenticated && (
               <>
-                <Button
-                  onClick={() => handleNavigate('login-admin')}
-                  variant="outline"
-                  className="border-[var(--neon-green)] text-[var(--neon-green)]"
-                >
-                  ADMIN
-                </Button>
-
                 <Button
                   onClick={() => handleNavigate('login')}
                   className="bg-[var(--neon-green)] text-black"

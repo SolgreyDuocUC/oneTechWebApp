@@ -2,7 +2,7 @@ import type { User, Role } from '../types';
 
 const ADMIN_ROLE: Role = {
   id: 1,
-  name: 'ROLE_ADMIN',
+  name: 'ADMIN',
 };
 
 const CLIENTE_ROLE: Role = {
@@ -16,31 +16,15 @@ export const usuarios: User[] = [
     run: '12345678-9',
     nombre: 'Admin',
     apellidos: 'One Tech',
-    email: 'mi.calderons@duocuc.cl',
+    email: 'admin@duoc.cl',
     password: 'admin123',
-    fechaNacimiento: '2000-04-04',
+    fechaNacimiento: '1990-01-01',
     direccion: 'Av. Libertador 123',
     region: 'Metropolitana',
     comuna: 'Santiago',
     puntosLevelUp: 0,
     codigoReferido: 'ADMIN',
     genero: 'MASCULINO',
-    roles: [ADMIN_ROLE],
-  },
-    {
-    id: 1,
-    run: '26823184-6',
-    nombre: 'Admin',
-    apellidos: 'One Tech',
-    email: 'sol.medina@duocuc.cl',
-    password: 'admin123',
-    fechaNacimiento: '2002-10-11',
-    direccion: 'Av. Libertador 123',
-    region: 'Metropolitana',
-    comuna: 'Santiago',
-    puntosLevelUp: 0,
-    codigoReferido: 'ADMIN',
-    genero: 'FEMENINO',
     roles: [ADMIN_ROLE],
   },
   {
