@@ -1,6 +1,7 @@
 import { api } from "../api";
 import type { UserDTO, UserCreateDTO, UserUpdateDTO } from "../../DTO/UserDTO";
 import type { ChangePasswordDTO } from "../../DTO/ChangePasswordDTO";
+import type { DeleteAccountDTO } from "@/remote/DTO/DeleteAccountDTO";
 
 const URL = "/api/v1/users";
 
@@ -42,7 +43,7 @@ export const UserService = {
     await api.put(`${URL}/${id}/change-password`, data);
   },
 
-deleteUser: async (id: number): Promise<void> => {
+deleteUser: async (id: number, payload?: DeleteAccountDTO): Promise<void> => {
     await api.delete(`${URL}/${id}`);
   },
 };

@@ -14,6 +14,7 @@ import { UserService } from "@/remote/service/User/UserService";
 import { useAuth } from "@/contexts/AuthContext";
 import type { UserUpdateDTO } from "@/remote/DTO/UserDTO";
 import type { ChangePasswordDTO } from "@/remote/DTO/ChangePasswordDTO";
+import type { DeleteAccountDTO } from "@/remote/DTO/DeleteAccountDTO";
 import { regiones } from "@/data/mockRegiones";
 
 export type Genero = "FEMENINO" | "MASCULINO" | "SIN_ESPECIFICAR";
@@ -119,6 +120,7 @@ interface UserProfileFormData {
         const payload: UserUpdateDTO = {
         nombre: formData.nombre,
         apellidos: formData.apellidos,
+        email: formData.email,
         direccion: formData.direccion,
         region: formData.region,
         comuna: formData.comuna,
@@ -181,12 +183,17 @@ interface UserProfileFormData {
         if (!confirmed) return;
 
         try {
-        await UserService.deleteUser(user.id);
-        toast.success("Cuenta eliminada");
-        logout();
-        onNavigate("home");
+            const payload: DeleteAccountDTO = {
+                password: deletePassword,
+            };
+            await UserService.deleteUser(user.id, payload);
+            toast.success("Cuenta eliminada correctamente");
+            logout();
+            onNavigate("home");
         } catch {
-        toast.error("Contraseña incorrecta");
+            toast.error(
+                "No se pudo eliminar la cuenta. Verifica tu contraseña."
+            );
         }
     };
 
@@ -225,11 +232,11 @@ interface UserProfileFormData {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="relative">
                         <label className="text-gray-300 mb-2 block">Nombre</label>
-                        <Input value={formData.nombre} readOnly className="bg-[#2a2a2a] border-gray-700 text-gray-400 cursor-not-allowed" />
+                        <Input value={formData.nombre} onChange={e => setFormData(f => ({ ...f, nombre: e.target.value }))} className="bg-[#1a1a1a] border-gray-700 text-white" />
                     </div>
                     <div className="relative">
                         <label className="text-gray-300 mb-2 block">Apellidos</label>
-                        <Input value={formData.apellidos} readOnly className="bg-[#2a2a2a] border-gray-700 text-gray-400 cursor-not-allowed" />
+                        <Input value={formData.apellidos} onChange={e => setFormData(f => ({ ...f, apellidos: e.target.value }))} className="bg-[#1a1a1a] border-gray-700 text-white" />
                     </div>
                 </div>
 

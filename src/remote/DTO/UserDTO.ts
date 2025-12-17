@@ -42,6 +42,7 @@ export interface AuthResponse {
 export interface UserUpdateDTO {
     nombre: string;
     apellidos: string;
+    email: string;
     direccion: string;
     region: string;
     comuna: string;
