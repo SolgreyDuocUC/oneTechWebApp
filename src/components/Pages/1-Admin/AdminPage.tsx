@@ -108,8 +108,8 @@ export const AdminPage = ({ onNavigate }: AdminPageProps) => {
       toast.error('Por favor completa todos los campos obligatorios');
       return;
     }
-    if (!validatePrice(newProduct.price || 0)) {
-      toast.error('El precio debe ser mayor o igual a 0');
+    if ((newProduct.price || 0) <= 0) {
+      toast.error('El precio debe ser un número mayor que 0');
       return;
     }
     if (!validateStock(newProduct.stock || 0)) {
@@ -370,10 +370,11 @@ export const AdminPage = ({ onNavigate }: AdminPageProps) => {
                     <label className="text-gray-300 mb-2 block">Slug <span className="text-red-500">*</span></label>
                     <Input
                       value={newProduct.slug}
-                      onChange={(e) => setNewProduct({ ...newProduct, slug: e.target.value })}
+                      onChange={(e) => setNewProduct({ ...newProduct, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
                       placeholder="teclado-rgb"
                       className="bg-[#1a1a1a] border-gray-700 text-white"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Solo minúsculas, números y guiones (ej: teclado-gamer-rgb).</p>
                   </div>
 
                   <div>
@@ -405,6 +406,7 @@ export const AdminPage = ({ onNavigate }: AdminPageProps) => {
                       onChange={(e) => setNewProduct({ ...newProduct, price: parseFloat(e.target.value) || 0 })}
                       className="bg-[#1a1a1a] border-gray-700 text-white"
                     />
+                    <p className="text-xs text-gray-500 mt-1">El precio no puede ser 0.</p>
                   </div>
 
                   <div>
@@ -427,6 +429,7 @@ export const AdminPage = ({ onNavigate }: AdminPageProps) => {
                       onChange={(e) => setNewProduct({ ...newProduct, stockCritico: parseInt(e.target.value) || 0 })}
                       className="bg-[#1a1a1a] border-gray-700 text-white"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Nivel de stock para recibir alertas de inventario bajo.</p>
                   </div>
 
                   <div>
@@ -457,6 +460,7 @@ export const AdminPage = ({ onNavigate }: AdminPageProps) => {
                       placeholder="https://..."
                       className="bg-[#1a1a1a] border-gray-700 text-white"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Pega la URL completa de una imagen alojada en la web.</p>
                   </div>
 
                   <div className="md:col-span-2 flex items-center gap-2">
