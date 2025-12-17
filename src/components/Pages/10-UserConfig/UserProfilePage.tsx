@@ -157,7 +157,7 @@ interface UserProfileFormData {
         if (!confirmed) return;
 
         try {
-        await UserService.deleteUser(user.id);
+        await UserService.deleteUser(user.id, deletePassword);
         toast.success("Cuenta eliminada");
         logout();
         onNavigate("home");
