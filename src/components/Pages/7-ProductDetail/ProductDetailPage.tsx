@@ -27,7 +27,7 @@ export const ProductDetailPage = ({ productId, onNavigate }: ProductDetailPagePr
 
   useEffect(() => {
     setLoading(true);
-    getProductById(productId)
+    getProductById(Number(productId))
       .then(setProduct)
       .catch(err => {
         console.error("Error al cargar el producto:", err);
@@ -36,7 +36,7 @@ export const ProductDetailPage = ({ productId, onNavigate }: ProductDetailPagePr
       .finally(() => setLoading(false));
   }, [productId]);
 
-  const productReviews = allReviews.filter((r) => r.productId === productId);
+  const productReviews = allReviews.filter((r) => r.productId === Number(productId));
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-white">Cargando producto...</div>;
@@ -107,7 +107,7 @@ export const ProductDetailPage = ({ productId, onNavigate }: ProductDetailPagePr
           <div className="relative">
             <img
               src={product.imagen}
-              alt={product.nombre}
+              alt={product.name}
               className="w-full rounded-lg border-2 border-[var(--neon-green)]"
             />
             {product.featured && (
@@ -120,10 +120,10 @@ export const ProductDetailPage = ({ productId, onNavigate }: ProductDetailPagePr
           {/* Información */}
           <div>
             <Badge className="mb-4 bg-black border-[var(--neon-green)] text-[var(--neon-green)]">
-              {product.categoria}
+              {product.category}
             </Badge>
 
-            <h1 className="text-4xl mb-4 text-white">{product.nombre}</h1>
+            <h1 className="text-4xl mb-4 text-white">{product.name}</h1>
 
             {/* Calificación */}
             {avgRating > 0 && (
@@ -147,12 +147,12 @@ export const ProductDetailPage = ({ productId, onNavigate }: ProductDetailPagePr
             )}
 
             <div className="text-5xl text-[var(--neon-green)] mb-6">
-              {formatPrice(product.precio)}
+              {formatPrice(product.price)}
             </div>
 
             <div className="bg-[#111] border border-gray-800 rounded-lg p-4 mb-6">
               <h3 className="text-[var(--neon-green)] mb-2">Descripción</h3>
-              <p className="text-gray-300">{product.descripcion}</p>
+              <p className="text-gray-300">{product.description}</p>
             </div>
 
             {/* Stock */}
@@ -171,7 +171,7 @@ export const ProductDetailPage = ({ productId, onNavigate }: ProductDetailPagePr
 
             {/* Código del producto */}
             <div className="text-sm text-gray-500 mb-6">
-              Código: <span className="text-[var(--neon-green)]">{product.codigo}</span>
+              Código: <span className="text-[var(--neon-green)]">{product.slug}</span>
             </div>
 
             {/* Cantidad y agregar al carrito */}

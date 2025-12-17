@@ -5,10 +5,9 @@ import { ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Props } from '../Interface/Props';
 
-
 const ProductosDestacados: React.FC<Props> = ({ productos, onNavigate, addToCart }) => {
-  const handleAddToCart = (id: string) => {
-    addToCart(id, 1);
+  const handleAddToCart = (id: number) => {
+    addToCart(id.toString(), 1);
     toast.success('Producto agregado al carrito');
   };
 
@@ -38,7 +37,7 @@ const ProductosDestacados: React.FC<Props> = ({ productos, onNavigate, addToCart
               key={p.id}
               product={p}
               onAddToCart={() => handleAddToCart(p.id)}
-              onViewDetails={(id) => onNavigate('product-detail', { productId: id })}
+              onViewDetails={() => onNavigate('product-detail', { productId: p.id })}
             />
           ))}
         </div>

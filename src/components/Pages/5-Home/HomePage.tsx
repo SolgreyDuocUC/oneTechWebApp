@@ -9,58 +9,48 @@ import type { HomePageProps } from './Interface/HomePageProps';
 export const HomePage = ({ onNavigate }: HomePageProps) => {
   const { addToCart } = useCart();
 
-  // Filtra productos destacados
-  const featuredProducts = productos.filter((p) => p.featured);
+  const handleAddToCart = (productId: string | number, quantity: number) => {
+    addToCart(Number(productId), quantity);
+  };
 
-  // Filtra productos por categorías
-  const computadores = productos.filter((p) => p.categoria === 'Computadores');
-  const perifericos = productos.filter((p) => p.categoria === 'Periféricos');
-  const monitores = productos.filter((p) => p.categoria === 'Monitores');
+  const featuredProducts = productos.filter((p) => p.featured);
+  const computadores = productos.filter((p) => p.category === 'Computadores');
+  const perifericos = productos.filter((p) => p.category === 'Periféricos');
+  const monitores = productos.filter((p) => p.category === 'Monitores');
 
   return (
     <div className="min-h-screen">
-      {/* Carrusel */}
       <HomeCarousel onNavigate={onNavigate} />
-
-      {/* Beneficios */}
       <Beneficios />
-
-      {/* Productos Destacados */}
       <ProductosDestacados
         productos={featuredProducts}
         onNavigate={onNavigate}
-        addToCart={addToCart}
+        addToCart={handleAddToCart}
       />
-
-      {/* Secciones por Categoría */}
       <SeccionCategoria
         productos={computadores}
         titulo="Computadores Gamer"
         descripcion="Potencia para tus juegos favoritos"
         color="purple"
         onNavigate={onNavigate}
-        addToCart={addToCart}
+        addToCart={handleAddToCart}
       />
-
       <SeccionCategoria
         productos={perifericos}
         titulo="Periféricos Gaming"
         descripcion="Mejora tu experiencia de juego"
         color="green"
         onNavigate={onNavigate}
-        addToCart={addToCart}
+        addToCart={handleAddToCart}
       />
-
       <SeccionCategoria
         productos={monitores}
         titulo="Monitores Gaming"
         descripcion="Alta resolución y velocidad"
         color="blue"
         onNavigate={onNavigate}
-        addToCart={addToCart}
+        addToCart={handleAddToCart}
       />
-
-      {/* Sobre One Tech */}
       <section className="py-16 px-4 bg-black border-t-2 border-[var(--neon-green)]">
         <div className="max-w-4xl mx-auto text-gray-300">
           <div className="text-center mb-8">

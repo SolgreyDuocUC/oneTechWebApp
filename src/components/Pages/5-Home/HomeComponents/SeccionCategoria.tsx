@@ -11,7 +11,7 @@ interface Props {
   descripcion: string;
   color: string;
   onNavigate: HomePageProps['onNavigate'];
-  addToCart: (productId: string, quantity: number) => void;
+  addToCart: (productId: number, quantity: number) => void;
 }
 
 const SeccionCategoria: React.FC<Props> = ({

@@ -21,17 +21,15 @@ export interface User {
 
 export interface Product {
   id: number;
-
   name: string;
   slug: string;
   description: string;
-
   price: number;
   stock: number;
   stockCritico: number;
-
+  category: string;
+  imagen: string;
   featured?: boolean | null;
-
   createdAt?: string;
   updatedAt?: string;
 }
@@ -42,8 +40,8 @@ export interface CartItem {
   cantidad: number;
 }
 export interface Review {
-  id: string;
-  productId: string;
+  id: number;
+  productId: number;
   userId: string;
   userName: string;
   calificacion: number;
