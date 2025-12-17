@@ -3,7 +3,6 @@ import { AuthService } from "@/remote/service/User/AuthService";
 import type { UserRole } from "@/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-
 interface AuthContextType {
     user: AuthUser | null;
     loading: boolean;
@@ -11,7 +10,7 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
     hasRole: (role: UserRole) => boolean;
-    }
+}
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
@@ -21,65 +20,68 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // Restaurar sesión
     useEffect(() => {
-        const accessToken = localStorage.getItem("accessToken");
+        const id = localStorage.getItem("id");
         const email = localStorage.getItem("email");
         const roles = localStorage.getItem("roles");
 
-        if (accessToken && email && roles) {
-        setUser({
-            email,
-            roles: JSON.parse(roles),
-        });
+        if (id && email && roles) {
+            setUser({
+                id: Number(id),
+                email,
+                roles: JSON.parse(roles),
+            });
         }
 
         setLoading(false);
-}, []);
+    }, []);
 
     // LOGIN
     const login = async (email: string, password: string): Promise<boolean> => {
         try {
-        const data = await AuthService.login(email, password);
+            const data = await AuthService.login(email, password);
 
-        localStorage.setItem("email", data.email);
-        localStorage.setItem("roles", JSON.stringify(data.roles));
+            localStorage.setItem("id", String(data.id));
+            localStorage.setItem("email", data.email);
+            localStorage.setItem("roles", JSON.stringify(data.roles));
 
-        setUser({
-            email: data.email,
-            roles: data.roles,
-        });
+            setUser({
+                id: data.id,
+                email: data.email,
+                roles: data.roles,
+            });
 
-        return true;
+            return true;
         } catch (error) {
-        console.error("Login error:", error);
-        return false;
+            console.error("Login error:", error);
+            return false;
         }
     };
 
     // LOGOUT
     const logout = () => {
         AuthService.logout();
+        localStorage.removeItem("id");
         localStorage.removeItem("email");
         localStorage.removeItem("roles");
         setUser(null);
     };
 
-    // Helper de roles
     const hasRole = (role: UserRole): boolean => {
         return user?.roles.includes(role) ?? false;
     };
 
     return (
         <AuthContext.Provider
-        value={{
-            user,
-            loading,
-            isAuthenticated: !!user,
-            login,
-            logout,
-            hasRole,
-        }}
+            value={{
+                user,
+                loading,
+                isAuthenticated: !!user,
+                login,
+                logout,
+                hasRole,
+            }}
         >
-        {children}
+            {children}
         </AuthContext.Provider>
     );
 };
