@@ -1,18 +1,27 @@
-import React, { useState, useEffect } from "react";
-import { ArrowLeft, UserCog, Lock, HelpCircle } from "lucide-react";
-import { Button } from "../../ui/button";
+import React, { useState, useEffect, useMemo } from "react";
+import { ArrowLeft, UserCog, Lock, HelpCircle, Loader2, Mail } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Input } from "../../ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { UserService } from "@/remote/service/User/UserService";
 import { useAuth } from "@/contexts/AuthContext";
 import type { UserUpdateDTO } from "@/remote/DTO/UserDTO";
 import type { ChangePasswordDTO } from "@/remote/DTO/ChangePasswordDTO";
+import { regiones } from "@/data/mockRegiones";
 
 export type Genero = "FEMENINO" | "MASCULINO" | "SIN_ESPECIFICAR";
 
 interface UserProfileFormData {
     nombre: string;
     apellidos: string;
+    email: string;
     direccion: string;
     region: string;
     comuna: string;
@@ -24,16 +33,19 @@ interface UserProfileFormData {
     }
 
     export const UserProfilePage = ({ onNavigate }: UserProfilePageProps) => {
-    const { user, logout } = useAuth();
+    const { user, logout, loading: authLoading } = useAuth();
 
     const [formData, setFormData] = useState<UserProfileFormData>({
         nombre: "",
         apellidos: "",
+        email: "",
         direccion: "",
         region: "",
         comuna: "",
         genero: "",
     });
+
+    const [loading, setLoading] = useState(true);
 
     const [passwordData, setPasswordData] = useState<ChangePasswordDTO>({
         currentPassword: "",
@@ -46,27 +58,39 @@ interface UserProfileFormData {
 
 
     useEffect(() => {
-        if (!user?.id) return;
+        if (authLoading) return;
+        if (!user?.id) {
+            toast.error("Debes iniciar sesión para ver tu perfil.");
+            onNavigate("login");
+            return;
+        }
 
         const loadProfile = async () => {
-        try {
-            const fullUser = await UserService.getUserById(user.id);
-
-            setFormData({
-            nombre: fullUser.nombre ?? "",
-            apellidos: fullUser.apellidos ?? "",
-            direccion: fullUser.direccion ?? "",
-            region: fullUser.region ?? "",
-            comuna: fullUser.comuna ?? "",
-            genero: fullUser.genero ?? "SIN_ESPECIFICAR",
-            });
-        } catch {
-            toast.error("No se pudo cargar la información del usuario");
-        }
+            try {
+                const fullUser = await UserService.getUserById(user.id);
+                setFormData({
+                    nombre: fullUser.nombre ?? "",
+                    apellidos: fullUser.apellidos ?? "",
+                    email: user.email ?? "",
+                    direccion: fullUser.direccion ?? "",
+                    region: fullUser.region ?? "",
+                    comuna: fullUser.comuna ?? "",
+                    genero: fullUser.genero ?? "SIN_ESPECIFICAR",
+                });
+            } catch (error) {
+                toast.error("No se pudo cargar la información del usuario");
+            } finally {
+                setLoading(false);
+            }
         };
 
         loadProfile();
-    }, [user]);
+    }, [user, authLoading, onNavigate]);
+
+    const comunasDisponibles = useMemo(
+        () => regiones.find((r) => r.nombre === formData.region)?.comunas || [],
+        [formData.region]
+    );
 
 
     const validate = () => {
@@ -166,6 +190,16 @@ interface UserProfileFormData {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="flex items-center gap-2 text-[var(--neon-green)]">
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                    <span>Cargando tu perfil...</span>
+                </div>
+            </div>
+        );
+    }
     return (
         <div className="min-h-screen py-12 px-4">
         <div className="max-w-3xl mx-auto">
@@ -188,7 +222,83 @@ interface UserProfileFormData {
             {/* MIS DATOS */}
             <div className="bg-[#111] border border-[var(--neon-green)] rounded-lg p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-                {/* (formulario igual al tuyo, sin cambios) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="relative">
+                        <label className="text-gray-300 mb-2 block">Nombre</label>
+                        <Input value={formData.nombre} readOnly className="bg-[#2a2a2a] border-gray-700 text-gray-400 cursor-not-allowed" />
+                    </div>
+                    <div className="relative">
+                        <label className="text-gray-300 mb-2 block">Apellidos</label>
+                        <Input value={formData.apellidos} readOnly className="bg-[#2a2a2a] border-gray-700 text-gray-400 cursor-not-allowed" />
+                    </div>
+                </div>
+
+                <div>
+                    <label className="text-gray-300 mb-2 block">Correo Electrónico</label>
+                    <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                        <Input type="email" value={formData.email} onChange={e => setFormData(f => ({ ...f, email: e.target.value }))} className="pl-10 bg-[#1a1a1a] border-gray-700 text-white" />
+                    </div>
+                </div>
+
+                <div>
+                    <label className="text-gray-300 mb-2 block">Dirección</label>
+                    <Input value={formData.direccion} onChange={e => setFormData(f => ({ ...f, direccion: e.target.value }))} placeholder="Ej: Av. Siempreviva 742" className="bg-[#1a1a1a] border-gray-700 text-white" />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label className="text-gray-300 mb-2 block">Región</label>
+                        <Select
+                            value={formData.region}
+                            onValueChange={(value) => setFormData((prev) => ({ ...prev, region: value, comuna: "" }))}
+                        >
+                            <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
+                                <SelectValue placeholder="Selecciona región" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {regiones.map((region) => (
+                                    <SelectItem key={region.nombre} value={region.nombre}>
+                                        {region.nombre}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <label className="text-gray-300 mb-2 block">Comuna</label>
+                        <Select
+                            value={formData.comuna}
+                            onValueChange={(value) => setFormData(f => ({ ...f, comuna: value }))}
+                            disabled={!formData.region || comunasDisponibles.length === 0}
+                        >
+                            <SelectTrigger className="bg-[#1a1a1a] border-gray-700 text-white">
+                                <SelectValue placeholder="Selecciona comuna" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {comunasDisponibles.map((comuna) => (
+                                    <SelectItem key={comuna} value={comuna}>
+                                        {comuna}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="text-gray-300 mb-2 block">Género</label>
+                    <select
+                        value={formData.genero}
+                        onChange={e => setFormData(f => ({ ...f, genero: e.target.value as Genero }))}
+                        className="w-full p-2 bg-[#1a1a1a] border border-gray-700 text-white rounded-md h-10"
+                    >
+                        <option value="SIN_ESPECIFICAR">Sin especificar</option>
+                        <option value="FEMENINO">Femenino</option>
+                        <option value="MASCULINO">Masculino</option>
+                    </select>
+                </div>
+
                 <Button
                 type="submit"
                 className="w-full bg-[var(--neon-green)] text-black hover:bg-[var(--neon-purple)] hover:text-white"
