@@ -1,17 +1,20 @@
+import { useEffect, useState } from 'react';
 import { ShoppingCart, AlertCircle, Star } from 'lucide-react';
-import type { Product } from '../../../../types';
-import { formatPrice } from '../../../../utils/validations';
 import { Button } from '../../../ui/button';
 import { Badge } from '../../../ui/badge';
+import { toast } from 'sonner';
+import { formatPrice } from '../../../../utils/validations';
 import { reviews } from '../../../../data/mockResenia';
+import type { Product } from '@/types';
+import { getProducts } from '@/remote/service/Products/ProductService';
 
-interface ProductCardProps {
-  product: Product;
+interface ProductListProps {
   onAddToCart: (productId: number) => void;
   onViewDetails: (productId: number) => void;
 }
 
-export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCardProps) => {
+// Componente ProductCard
+export const ProductCard = ({ product, onAddToCart, onViewDetails }: { product: Product; onAddToCart: (id: number) => void; onViewDetails: (id: number) => void }) => {
   const isLowStock = product.stockCritico && product.stock <= product.stockCritico;
   const isOutOfStock = product.stock === 0;
 
@@ -36,8 +39,8 @@ export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCard
           )}
           {isOutOfStock && <Badge variant="destructive">Sin Stock</Badge>}
           {isLowStock && !isOutOfStock && (
-            <Badge className="bg-orange-500 text-white border-0">
-              <AlertCircle className="w-3 h-3 mr-1" />
+            <Badge className="bg-orange-500 text-white border-0 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
               Últimas Unidades
             </Badge>
           )}
@@ -87,6 +90,44 @@ export const ProductCard = ({ product, onAddToCart, onViewDetails }: ProductCard
           </Button>
         </div>
       </div>
+    </div>
+  );
+};
+
+// Componente ProductList
+export const ProductList = ({ onAddToCart, onViewDetails }: ProductListProps) => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getProducts();
+      setProducts(data);
+    } catch (error) {
+      toast.error('Error al cargar los productos');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  if (isLoading) return <p className="text-white">Cargando productos...</p>;
+  if (products.length === 0) return <p className="text-white">No hay productos disponibles</p>;
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      {products.map((p) => (
+        <ProductCard
+          key={p.id}
+          product={p}
+          onAddToCart={onAddToCart}
+          onViewDetails={onViewDetails}
+        />
+      ))}
     </div>
   );
 };

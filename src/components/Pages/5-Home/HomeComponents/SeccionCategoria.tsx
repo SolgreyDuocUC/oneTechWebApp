@@ -22,14 +22,16 @@ const SeccionCategoria: React.FC<Props> = ({
   onNavigate,
   addToCart,
 }) => {
-  if (productos.length === 0) return null;
+  if (!productos || productos.length === 0) return null;
 
   return (
-    <section className={`py-12 px-4 bg-${color}`}>
+    <section className={`py-12 px-4 bg-[#111]`}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className={`text-3xl md:text-4xl mb-2 text-[var(--neon-${color})]`}>{titulo}</h2>
+            <h2 className={`text-3xl md:text-4xl mb-2 text-[var(--neon-${color})]`}>
+              {titulo}
+            </h2>
             <p className="text-gray-400">{descripcion}</p>
           </div>
           <Button
