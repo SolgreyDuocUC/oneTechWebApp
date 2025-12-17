@@ -31,7 +31,6 @@ export const AuthService = {
         });
 
         localStorage.setItem("accessToken", data.accessToken);
-
         return data;
     },
 

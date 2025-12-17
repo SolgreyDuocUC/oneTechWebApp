@@ -42,7 +42,7 @@ export const UserService = {
     await api.put(`${URL}/${id}/change-password`, data);
   },
 
-  deleteUser: async (id: number, deletePassword: string): Promise<void> => {
+deleteUser: async (id: number): Promise<void> => {
     await api.delete(`${URL}/${id}`);
   },
 };
