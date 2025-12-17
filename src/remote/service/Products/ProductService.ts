@@ -1,14 +1,37 @@
-import axios from 'axios';
-import type { Product } from '../../../types';
+import { api } from "../api";
+import type {
+    Product,
+    ProductCreateDTO,
+    ProductUpdateDTO,
+} from "../../DTO/ProductDTO";
 
-const API_URL = 'http://localhost:8085/api/v1/products';
+const BASE_URL = "/api/v1/products";
 
 export const getProducts = async (): Promise<Product[]> => {
-    const response = await axios.get<Product[]>(API_URL);
-    return response.data;
+    const { data } = await api.get<Product[]>(BASE_URL);
+    return data;
 };
 
-export const getProductById = async (id: string): Promise<Product> => {
-    const response = await axios.get<Product>(`${API_URL}/${id}`);
-    return response.data;
+export const getProductById = async (id: number): Promise<Product> => {
+    const { data } = await api.get<Product>(`${BASE_URL}/${id}`);
+    return data;
+};
+
+export const createProduct = async (
+    payload: ProductCreateDTO
+): Promise<Product> => {
+    const { data } = await api.post<Product>(BASE_URL, payload);
+    return data;
+};
+
+export const updateProduct = async (
+    id: number,
+    payload: ProductUpdateDTO
+): Promise<Product> => {
+    const { data } = await api.put<Product>(`${BASE_URL}/${id}`, payload);
+    return data;
+};
+
+export const deleteProduct = async (id: number): Promise<void> => {
+    await api.delete(`${BASE_URL}/${id}`);
 };

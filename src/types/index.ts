@@ -20,23 +20,27 @@ export interface User {
 }
 
 export interface Product {
-  id: string;
-  codigo: string;
-  nombre: string;
-  descripcion: string;
-  precio: number;
+  id: number;
+
+  name: string;
+  slug: string;
+  description: string;
+
+  price: number;
   stock: number;
-  stockCritico?: number;
-  categoria: string;
-  imagen: string;
-  featured?: boolean;
+  stockCritico: number;
+
+  featured?: boolean | null;
+
+  createdAt?: string;
+  updatedAt?: string;
 }
+
 
 export interface CartItem {
-  productId: string;
+  productId: number;
   cantidad: number;
 }
-
 export interface Review {
   id: string;
   productId: string;
